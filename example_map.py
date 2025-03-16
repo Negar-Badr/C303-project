@@ -42,3 +42,27 @@ class ExampleHouse(Map):
         objects.append((pressure_plate, Coord(13, 7)))
 
         return objects
+
+
+class PawsPerilHouse(Map):
+    def __init__(self) -> None:
+        super().__init__(
+            name="Paws in Peril House",
+            description="Welcome to Paws in Peril House!",
+            size=(15, 15),
+            entry_point=Coord(14, 7),
+            background_tile_image='cobblestone',
+        )
+    
+    def get_objects(self) -> list[tuple[MapObject, Coord]]:
+        objects: list[tuple[MapObject, Coord]] = []
+
+        # add a door
+        door = Door('int_entrance', linked_room="Trottier Town")
+        objects.append((door, Coord(14, 7)))
+
+        # add a pressure plate
+        pressure_plate = ScorePressurePlate()
+        objects.append((pressure_plate, Coord(13, 7)))
+
+        return objects
