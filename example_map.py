@@ -89,7 +89,7 @@ class ExampleHouse(Map):
         super().__init__(
             name="Test House",
             description="Welcome to Paws Peril House! Please help us save the animals",
-            size=(15, 20), #size of the area in the example house  
+            size=(20, 15), #size of the area in the example house  
             entry_point=Coord(14, 7),
             background_tile_image='grass',
             background_music='blithe', #todo
@@ -100,49 +100,36 @@ class ExampleHouse(Map):
 
         #adding trees
         tree = Tree() 
-        objects.append((tree, Coord(0,0)))
-        objects.append((tree, Coord(0,2)))
-        objects.append((tree, Coord(0,4)))
-        objects.append((tree, Coord(0,6)))
-        objects.append((tree, Coord(0,8)))
-        objects.append((tree, Coord(0,10)))
-        objects.append((tree, Coord(0,12)))     
-        objects.append((tree, Coord(0,14)))
-        objects.append((tree, Coord(0,16)))
-        objects.append((tree, Coord(0,18)))
+        for i in range(14):
+            objects.append((tree, Coord(0,i)))
+            objects.append((tree, Coord(14,i)))
+            objects.append((tree, Coord(i,0)))
+            objects.append((tree, Coord(i,14)))
+        objects.append((tree, Coord(14,14)))
 
-        objects.append((tree, Coord(2,18))) 
-        objects.append((tree, Coord(4,18)))
-        objects.append((tree, Coord(6,18)))
-        objects.append((tree, Coord(8,18)))
-        objects.append((tree, Coord(10,18)))
-        objects.append((tree, Coord(12,18)))
+        # Remove trees for the entrance
+        objects.remove((tree, Coord(14,7)))
+        objects.remove((tree, Coord(14,8)))
+        # Remove trees for the exit
+        objects.remove((tree, Coord(0,4)))
+        objects.remove((tree, Coord(0,5)))
 
-        objects.append((tree, Coord(2,0)))
-        objects.append((tree, Coord(4,0)))
-        objects.append((tree, Coord(6,0)))
-        objects.append((tree, Coord(8,0)))
-        objects.append((tree, Coord(10,0)))
-        objects.append((tree, Coord(12,0)))
-
-        objects.append((tree, Coord(12,2))) 
-        objects.append((tree, Coord(12,4)))
-        objects.append((tree, Coord(12,6)))
-        objects.append((tree, Coord(12,8)))
-        #leave it empty for the entrance (12, 10)
-        objects.append((tree, Coord(12,12)))
-        objects.append((tree, Coord(12,14)))
-        objects.append((tree, Coord(12,16)))
+        # add a door(entrance)
+        door = Door('int_entrance', linked_room="Trottier Town")
+        objects.append((door, Coord(14, 7)))
+        # add a door(exit)
+        door = Door('int_entrance', linked_room="Paws in Peril House")
+        objects.append((door, Coord(0, 4)))
 
         # add rocks
         rock = Rock()
-        objects.append((rock, Coord(8, 13)))
+        objects.append((rock, Coord(8, 1)))
         rock = Rock()
         objects.append((rock, Coord(6,5)))
 
         # add flowers
         daisy = Daisy()
-        objects.append((daisy, Coord(9, 13)))
+        objects.append((daisy, Coord(9, 7)))
         orchid = Orchid()
         objects.append((orchid, Coord(9, 6)))
 
@@ -152,9 +139,9 @@ class ExampleHouse(Map):
         cow = Cow()
         objects.append((cow, Coord(8, 7)))
         cow = Cow()
-        objects.append((cow, Coord(7, 15)))
+        objects.append((cow, Coord(7, 2)))
         cow = Cow()
-        objects.append((cow, Coord(4, 13)))
+        objects.append((cow, Coord(4, 3)))
 
         # add the npc
         hunter = Hunter( #todo
@@ -163,9 +150,7 @@ class ExampleHouse(Map):
         )
         objects.append((hunter, Coord(3,8)))
 
-        # add a door
-        door = Door('int_entrance', linked_room="Trottier Town")
-        objects.append((door, Coord(14, 10)))
+        
 
         # add a pressure plate
         # pressure_plate = ScorePressurePlate()
