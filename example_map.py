@@ -3,6 +3,7 @@ from .imports import *
 import math
 import random
 from typing import Literal
+from .GameStateManager import GameStateManager
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -39,6 +40,10 @@ class Cow(PressurePlate):
         super().__init__(image_name)
         
     def player_entered(self, player) -> list[Message]:
+        """Handles when the player steps on a Cow."""
+        game_state_manager = GameStateManager()  
+        game_state_manager.collect_animal("cow")  # Update game state
+
         room = player.get_current_room()
         room.remove_from_grid(self, self.get_position())
         return [] 
@@ -48,6 +53,9 @@ class Rock(PressurePlate):
         super().__init__(image_name)
         
     def player_entered(self, player) -> list[Message]:
+        """Handles when the player steps on a Rock."""
+        game_state_manager = GameStateManager()  # Singleton instance
+        game_state_manager.collect_item("rock")  # Notify game state
         room = player.get_current_room()
         room.remove_from_grid(self, self.get_position())
         return []
@@ -57,6 +65,9 @@ class Daisy(PressurePlate):
         super().__init__(image_name)
         
     def player_entered(self, player) -> list[Message]:
+        """Handles when the player steps on a Daisy."""
+        game_state_manager = GameStateManager()  # Singleton instance
+        game_state_manager.collect_item("flower")  # Notify game state
         room = player.get_current_room()
         room.remove_from_grid(self, self.get_position())
         return []
@@ -70,16 +81,36 @@ class Hunter(Professor):
         )
     
     def update(self) -> list["Message"]:
-        """ Move in a random direction. """
-        direction: Literal["up", "down", "left", "right"] = random.choice(['up', 'down', 'left', 'right'])
-        print(f"Moving {direction}")
-        return self.move(direction)
+        """Hunter moves based on the current strategy."""
+        game_state_manager = GameStateManager()  # Singleton instance
+        strategy = game_state_manager.get_hunter_strategy()
+
+        # TODO: strategy 
+        if strategy == "teleportation":
+            # Simulate teleportation movement (random position)
+            new_x, new_y = random.randint(0, 14), random.randint(0, 19)
+            print(f"Hunter teleports to {new_x}, {new_y}")
+            return self.move_to(Coord(new_x, new_y))  # Assuming move_to is implemented
+        
+        elif strategy == "shortest-path":
+            # Implement pathfinding logic (A* or BFS)
+            print("Hunter moves towards the player using shortest path.")
+            return self.move_toward_player()  # Assuming move_toward_player() is implemented
+        
+        else:
+            # Default movement (random)
+            direction: Literal["up", "down", "left", "right"] = random.choice(['up', 'down', 'left', 'right'])
+            print(f"Hunter moves randomly: {direction}")
+            return self.move(direction)
     
 class Orchid(PressurePlate):
     def __init__(self, image_name='Orchid'):
         super().__init__(image_name)
         
     def player_entered(self, player) -> list[Message]:
+        """Handles when the player steps on an Orchid."""
+        game_state_manager = GameStateManager()  # Singleton instance
+        game_state_manager.collect_item("flower")  # Notify game state
         room = player.get_current_room()
         room.remove_from_grid(self, self.get_position())
         return [] 
