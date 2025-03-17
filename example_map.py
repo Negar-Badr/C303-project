@@ -36,7 +36,7 @@ class Right(MapObject):
         super().__init__(f"tile/background/{image_name}", passable=True)
 
 class Cow(PressurePlate):
-    def __init__(self, image_name='cow'):
+    def __init__(self, image_name='animals/cow'):
         super().__init__(image_name)
         
     def player_entered(self, player) -> list[Message]:
@@ -61,7 +61,7 @@ class Rock(PressurePlate):
         return []
 
 class Daisy(PressurePlate):
-    def __init__(self, image_name='Daisy'):
+    def __init__(self, image_name='flowers/Daisy'):
         super().__init__(image_name)
         
     def player_entered(self, player) -> list[Message]:
@@ -104,7 +104,7 @@ class Hunter(Professor):
             return self.move(direction)
     
 class Orchid(PressurePlate):
-    def __init__(self, image_name='Orchid'):
+    def __init__(self, image_name='flowers/Orchid'):
         super().__init__(image_name)
         
     def player_entered(self, player) -> list[Message]:
