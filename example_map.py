@@ -108,6 +108,7 @@ class ExampleHouse(Map):
         # add rocks
         rock = Rock()
         objects.append((rock, Coord(8, 13)))
+        rock = Rock()
         objects.append((rock, Coord(6,5)))
 
         # add flowers
@@ -119,8 +120,11 @@ class ExampleHouse(Map):
         #add cows 
         cow = Cow()
         objects.append((cow, Coord(5, 5)))
+        cow = Cow()
         objects.append((cow, Coord(8, 7)))
+        cow = Cow()
         objects.append((cow, Coord(7, 15)))
+        cow = Cow()
         objects.append((cow, Coord(4, 13)))
 
         # add a door
