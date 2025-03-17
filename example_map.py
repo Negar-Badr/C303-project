@@ -26,7 +26,7 @@ class ScorePressurePlate(PressurePlate):
     
 class Tree(MapObject): 
     def __init__(self, image_name: str = 'tree_heart'):
-        super().__init__(f"tile/background/{image_name}", passable=True)
+        super().__init__(f"tile/background/{image_name}", passable=False)
 
 class Left(MapObject): 
     def __init__(self, image_name: str = 'shallow_pit_left'):
@@ -120,7 +120,7 @@ class ExampleHouse(Map):
         super().__init__(
             name="Test House",
             description="Welcome to Paws Peril House! Please help us save the animals",
-            size=(20, 15), #size of the area in the example house  
+            size=(15, 15), #size of the area in the example house  
             entry_point=Coord(14, 7),
             background_tile_image='grass',
             background_music='blithe', #todo
