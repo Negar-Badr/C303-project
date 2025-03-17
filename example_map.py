@@ -74,7 +74,7 @@ class ExampleHouse(Map):
         super().__init__(
             name="Test House",
             description="Welcome to Paws Peril House! Please help us save the animals",
-            size=(50, 50),
+            size=(15, 20),
             entry_point=Coord(14, 7),
             background_tile_image='grass',
             background_music='blithe', #todo
@@ -85,69 +85,72 @@ class ExampleHouse(Map):
 
         #adding trees
         tree = Tree() 
-        objects.append((tree, Coord(20,22)))
-        objects.append((tree, Coord(20,24)))
-        objects.append((tree, Coord(20,26)))
-        objects.append((tree, Coord(20,28)))
-        objects.append((tree, Coord(20,30)))
-        objects.append((tree, Coord(20,32)))     
-        objects.append((tree, Coord(20,34)))
-        objects.append((tree, Coord(20,36)))
-        objects.append((tree, Coord(20,38)))
+        objects.append((tree, Coord(0,0)))
+        objects.append((tree, Coord(0,2)))
+        objects.append((tree, Coord(0,4)))
+        objects.append((tree, Coord(0,6)))
+        objects.append((tree, Coord(0,8)))
+        objects.append((tree, Coord(0,10)))
+        objects.append((tree, Coord(0,12)))     
+        objects.append((tree, Coord(0,14)))
+        objects.append((tree, Coord(0,16)))
+        objects.append((tree, Coord(0,18)))
 
-        objects.append((tree, Coord(22,38))) 
-        objects.append((tree, Coord(24,38)))
-        objects.append((tree, Coord(26,38)))
-        objects.append((tree, Coord(28,38)))
-        objects.append((tree, Coord(30,38)))
-        objects.append((tree, Coord(32,38)))
+        objects.append((tree, Coord(2,18))) 
+        objects.append((tree, Coord(4,18)))
+        objects.append((tree, Coord(6,18)))
+        objects.append((tree, Coord(8,18)))
+        objects.append((tree, Coord(10,18)))
+        objects.append((tree, Coord(12,18)))
 
-        objects.append((tree, Coord(22,22)))
-        objects.append((tree, Coord(24,22)))
-        objects.append((tree, Coord(26,22)))
-        objects.append((tree, Coord(28,22)))
-        objects.append((tree, Coord(30,22)))
-        objects.append((tree, Coord(32,22)))
+        objects.append((tree, Coord(2,0)))
+        objects.append((tree, Coord(4,0)))
+        objects.append((tree, Coord(6,0)))
+        objects.append((tree, Coord(8,0)))
+        objects.append((tree, Coord(10,0)))
+        objects.append((tree, Coord(12,0)))
 
-        objects.append((tree, Coord(32,24)))
-        objects.append((tree, Coord(32,26)))
-        objects.append((tree, Coord(32,28)))
-        objects.append((tree, Coord(32,32)))
-        objects.append((tree, Coord(32,34)))
-        objects.append((tree, Coord(32,36)))
+        objects.append((tree, Coord(12,2))) 
+        objects.append((tree, Coord(12,4)))
+        objects.append((tree, Coord(12,6)))
+        objects.append((tree, Coord(12,8)))
+        #leave it empty (12, 10)
+        objects.append((tree, Coord(12,12)))
+        objects.append((tree, Coord(12,14)))
+        objects.append((tree, Coord(12,16)))
 
         # add rocks
         rock = Rock()
-        objects.append((rock, Coord(28, 33)))
+        objects.append((rock, Coord(8, 13)))
         rock = Rock()
-        objects.append((rock, Coord(26,25)))
+        objects.append((rock, Coord(6,5)))
 
         # add flowers
         daisy = Daisy()
-        objects.append((daisy, Coord(29, 33)))
+        objects.append((daisy, Coord(9, 13)))
         orchid = Orchid()
-        objects.append((orchid, Coord(29, 26)))
+        objects.append((orchid, Coord(9, 6)))
 
         #add cows 
         cow = Cow()
-        objects.append((cow, Coord(25, 25)))
+        objects.append((cow, Coord(5, 5)))
         cow = Cow()
-        objects.append((cow, Coord(28, 27)))
+        objects.append((cow, Coord(8, 7)))
         cow = Cow()
-        objects.append((cow, Coord(27, 35)))
+        objects.append((cow, Coord(7, 15)))
         cow = Cow()
-        objects.append((cow, Coord(24, 33)))
+        objects.append((cow, Coord(4, 13)))
 
         # add the npc
         hunter = WalkingProfessor( #todo
             encounter_text="I will hunt you down",
             staring_distance=1,
         )
-        objects.append((hunter, Coord(23,28)))
+        objects.append((hunter, Coord(3,8)))
 
         # add a door
         door = Door('int_entrance', linked_room="Trottier Town")
-        objects.append((door, Coord(38, 30)))
+        objects.append((door, Coord(14, 10)))
 
         # add a pressure plate
         # pressure_plate = ScorePressurePlate()
