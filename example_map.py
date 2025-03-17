@@ -33,6 +33,34 @@ class Cow(PressurePlate):
         room.remove_from_grid(self, self.get_position())
         return []
 
+
+class Rock(PressurePlate):
+    def __init__(self, image_name='rock'):
+        super().__init__(image_name)
+        
+    def player_entered(self, player) -> list[Message]:
+        room = player.get_current_room()
+        room.remove_from_grid(self, self.get_position())
+        return []
+
+class Daisy(PressurePlate):
+    def __init__(self, image_name='Daisy'):
+        super().__init__(image_name)
+        
+    def player_entered(self, player) -> list[Message]:
+        room = player.get_current_room()
+        room.remove_from_grid(self, self.get_position())
+        return []
+    
+class Orchid(PressurePlate):
+    def __init__(self, image_name='Orchid'):
+        super().__init__(image_name)
+        
+    def player_entered(self, player) -> list[Message]:
+        room = player.get_current_room()
+        room.remove_from_grid(self, self.get_position())
+        return []
+    
 class ExampleHouse(Map):
     def __init__(self) -> None:
         super().__init__(
@@ -46,98 +74,54 @@ class ExampleHouse(Map):
     def get_objects(self) -> list[tuple[MapObject, Coord]]:
         objects: list[tuple[MapObject, Coord]] = []
 
-        #add tree (temporary, make it better later)
+        #adding trees
         tree = Tree() 
         objects.append((tree, Coord(0,2)))
-
-        tree = Tree() 
         objects.append((tree, Coord(0,4)))
-
-        tree = Tree() 
         objects.append((tree, Coord(0,6)))
-
-        tree = Tree() 
         objects.append((tree, Coord(0,8)))
-
-        tree = Tree() 
         objects.append((tree, Coord(0,10)))
-
-        tree = Tree() 
-        objects.append((tree, Coord(0,12)))
-
-        tree = Tree() 
+        objects.append((tree, Coord(0,12)))     
         objects.append((tree, Coord(0,14)))
-
-        tree = Tree() 
         objects.append((tree, Coord(0,16)))
-
-        tree = Tree() 
         objects.append((tree, Coord(0,18)))
-
-        tree = Tree() 
-        objects.append((tree, Coord(2,18)))
-
-        tree = Tree() 
+        objects.append((tree, Coord(2,18))) 
         objects.append((tree, Coord(4,18)))
-
-        tree = Tree() 
         objects.append((tree, Coord(6,18)))
-
-        tree = Tree() 
         objects.append((tree, Coord(8,18)))
-
-        tree = Tree() 
         objects.append((tree, Coord(10,18)))
-
-        tree = Tree() 
         objects.append((tree, Coord(12,18)))
-
-        tree = Tree() 
         objects.append((tree, Coord(2,2)))
-
-        tree = Tree() 
         objects.append((tree, Coord(4,2)))
-
-        tree = Tree() 
         objects.append((tree, Coord(6,2)))
-
-        tree = Tree() 
         objects.append((tree, Coord(8,2)))
-
-        tree = Tree() 
         objects.append((tree, Coord(10,2)))
-
-        tree = Tree() 
         objects.append((tree, Coord(12,2)))
-
-        tree = Tree() 
         objects.append((tree, Coord(12,4)))
-
-        tree = Tree() 
         objects.append((tree, Coord(12,6)))
-
-        tree = Tree() 
         objects.append((tree, Coord(12,8)))
-
-        tree = Tree() 
         objects.append((tree, Coord(12,12)))
-
-        tree = Tree() 
         objects.append((tree, Coord(12,14)))
-
-        tree = Tree() 
         objects.append((tree, Coord(12,16)))
-
-        tree = Tree() 
         objects.append((tree, Coord(12,18)))
 
+        # add rocks
+        rock = Rock()
+        objects.append((rock, Coord(8, 13)))
+        objects.append((rock, Coord(6,5)))
+
+        # add flowers
+        daisy = Daisy()
+        objects.append((daisy, Coord(9, 13)))
+        orchid = Orchid()
+        objects.append((orchid, Coord(9, 6)))
 
         #add cows 
         cow = Cow()
         objects.append((cow, Coord(5, 5)))
-
-        cow = Cow()
         objects.append((cow, Coord(8, 7)))
+        objects.append((cow, Coord(7, 15)))
+        objects.append((cow, Coord(4, 13)))
 
         # add a door
         door = Door('int_entrance', linked_room="Trottier Town")
