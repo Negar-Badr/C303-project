@@ -1,5 +1,8 @@
 
 from .imports import *
+import math
+import random
+from typing import Literal
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -18,7 +21,6 @@ class ScorePressurePlate(PressurePlate):
 
         # add score to player
         player.set_state("score", player.get_state("score") + 1)
-
         return messages
     
 class Tree(MapObject): 
@@ -39,8 +41,7 @@ class Cow(PressurePlate):
     def player_entered(self, player) -> list[Message]:
         room = player.get_current_room()
         room.remove_from_grid(self, self.get_position())
-        return []
-
+        return [] 
 
 class Rock(PressurePlate):
     def __init__(self, image_name='rock'):
@@ -59,6 +60,20 @@ class Daisy(PressurePlate):
         room = player.get_current_room()
         room.remove_from_grid(self, self.get_position())
         return []
+
+class Hunter(Professor):
+    def __init__(self, encounter_text: str, staring_distance: int = 0, facing_direction: Literal['up', 'down', 'left', 'right'] ='down') -> None:
+        super().__init__(
+            encounter_text=encounter_text,
+            facing_direction=facing_direction,
+            staring_distance=staring_distance,
+        )
+    
+    def update(self) -> list["Message"]:
+        """ Move in a random direction. """
+        direction: Literal["up", "down", "left", "right"] = random.choice(['up', 'down', 'left', 'right'])
+        print(f"Moving {direction}")
+        return self.move(direction)
     
 class Orchid(PressurePlate):
     def __init__(self, image_name='Orchid'):
@@ -67,14 +82,14 @@ class Orchid(PressurePlate):
     def player_entered(self, player) -> list[Message]:
         room = player.get_current_room()
         room.remove_from_grid(self, self.get_position())
-        return []
+        return [] 
     
 class ExampleHouse(Map):
     def __init__(self) -> None:
         super().__init__(
             name="Test House",
             description="Welcome to Paws Peril House! Please help us save the animals",
-            size=(15, 20),
+            size=(15, 20), #size of the area in the example house  
             entry_point=Coord(14, 7),
             background_tile_image='grass',
             background_music='blithe', #todo
@@ -114,7 +129,7 @@ class ExampleHouse(Map):
         objects.append((tree, Coord(12,4)))
         objects.append((tree, Coord(12,6)))
         objects.append((tree, Coord(12,8)))
-        #leave it empty (12, 10)
+        #leave it empty for the entrance (12, 10)
         objects.append((tree, Coord(12,12)))
         objects.append((tree, Coord(12,14)))
         objects.append((tree, Coord(12,16)))
@@ -142,7 +157,7 @@ class ExampleHouse(Map):
         objects.append((cow, Coord(4, 13)))
 
         # add the npc
-        hunter = WalkingProfessor( #todo
+        hunter = Hunter( #todo
             encounter_text="I will hunt you down",
             staring_distance=1,
         )
