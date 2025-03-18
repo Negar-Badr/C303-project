@@ -22,7 +22,7 @@ class GameStateManager:
         """Update game state when the player collects an item."""
         self.collected_items.add(item)
         print(f"Player collected: {item}")
-        self.update_hunter_strategy()
+        #self.update_hunter_strategy() # TODO, YOU CAN UNCOMMENT IT ONCE WE FINISH WRITING THE STRATEGIES
 
     def collect_animal(self, animal_name):
         """Update game state when the player collects an animal."""
