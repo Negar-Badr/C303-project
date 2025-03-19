@@ -24,6 +24,7 @@ class ScorePressurePlate(PressurePlate):
         player.set_state("score", player.get_state("score") + 1)
         return messages
     
+# -------------------------------------- BACKGROUND -----------------------------------------------------------------
 class Tree(MapObject): 
     def __init__(self, image_name: str = 'tree_heart'):
         super().__init__(f"tile/background/{image_name}", passable=False)
@@ -35,6 +36,7 @@ class Right(MapObject):
     def __init__(self, image_name: str = 'shallow_pit_right'):
         super().__init__(f"tile/background/{image_name}", passable=True)
 
+# -------------------------------------- ANIMALS -----------------------------------------------------------------
 class Cow(PressurePlate):
     def __init__(self, image_name='animals/cow'):
         super().__init__(image_name)
@@ -61,7 +63,6 @@ class Monkey(PressurePlate):
         room.remove_from_grid(self, self.get_position())
         return [] 
     
-
 class Owl(PressurePlate):
     def __init__(self, image_name='animals/owl'):
         super().__init__(image_name)
@@ -88,6 +89,7 @@ class Rabbit(PressurePlate):
         room.remove_from_grid(self, self.get_position())
         return []
 
+# -------------------------------------- ROCKS -----------------------------------------------------------------
 class Rock(PressurePlate):
     def __init__(self, image_name='rock'):
         super().__init__(image_name)
@@ -100,6 +102,7 @@ class Rock(PressurePlate):
         room.remove_from_grid(self, self.get_position())
         return []
 
+# -------------------------------------- FLOWERS -----------------------------------------------------------------
 class Daisy(PressurePlate):
     def __init__(self, image_name='flowers/Daisy'):
         super().__init__(image_name)
@@ -148,6 +151,7 @@ class Tulip(PressurePlate):
         room.remove_from_grid(self, self.get_position())
         return []
   
+# -------------------------------------- HUNTER -----------------------------------------------------------------
 class Hunter(Professor):
     def __init__(self, encounter_text: str, staring_distance: int = 0, facing_direction: Literal['up', 'down', 'left', 'right'] ='down') -> None:
         super().__init__(
@@ -177,9 +181,13 @@ class Hunter(Professor):
             # Default movement (random)
             direction: Literal["up", "down", "left", "right"] = random.choice(['up', 'down', 'left', 'right'])
             print(f"Hunter moves randomly: {direction}")
-            return self.move(direction)
-    
+            return self.move(direction) 
   
+
+
+
+
+# -------------------------------------- OUR HOUSE -----------------------------------------------------------------
 class ExampleHouse(Map):
     def __init__(self) -> None:
         super().__init__(
@@ -259,7 +267,6 @@ class ExampleHouse(Map):
         owl = Owl()
         objects.append((owl, Coord(1, 7)))
 
-
         #add rabbits
         rabbit = Rabbit()
         objects.append((rabbit, Coord(5, 7)))
@@ -268,8 +275,6 @@ class ExampleHouse(Map):
         rabbit = Rabbit()
         objects.append((rabbit, Coord(7, 7)))
 
-
-
         # add the npc
         hunter = Hunter( #todo
             encounter_text="I will hunt you down",
@@ -277,34 +282,8 @@ class ExampleHouse(Map):
         )
         objects.append((hunter, Coord(3,8)))
 
-        
-
         # add a pressure plate
         # pressure_plate = ScorePressurePlate()
         # objects.append((pressure_plate, Coord(13, 7)))
-
-        return objects
-
-
-class PawsPerilHouse(Map):
-    def __init__(self) -> None:
-        super().__init__(
-            name="Paws in Peril House",
-            description="Welcome to Paws in Peril House!",
-            size=(15, 15),
-            entry_point=Coord(14, 7),
-            background_tile_image='cobblestone',
-        )
-    
-    def get_objects(self) -> list[tuple[MapObject, Coord]]:
-        objects: list[tuple[MapObject, Coord]] = []
-
-        # add a door
-        door = Door('int_entrance', linked_room="Trottier Town")
-        objects.append((door, Coord(14, 7)))
-
-        # add a pressure plate
-        pressure_plate = ScorePressurePlate()
-        objects.append((pressure_plate, Coord(13, 7)))
 
         return objects
