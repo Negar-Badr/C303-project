@@ -197,14 +197,17 @@ class ExampleHouse(Map):
     def get_objects(self) -> list[tuple[MapObject, Coord]]:
         objects: list[tuple[MapObject, Coord]] = []
 
+        # Crearte a list of reserved positions to avoid overlapping objects
+        reserved_positions = set()
+
         #adding trees
         tree = Tree() 
         for i in range(14):
-            objects.append((tree, Coord(0,i)))
-            objects.append((tree, Coord(14,i)))
-            objects.append((tree, Coord(i,0)))
-            objects.append((tree, Coord(i,14)))
-        objects.append((tree, Coord(14,14)))
+            for pos in [Coord(0, i), Coord(14, i), Coord(i, 0), Coord(i, 14)]:
+                objects.append((tree, pos))
+                reserved_positions.add(pos.to_tuple())
+        objects.append((tree, Coord(14, 14)))
+        reserved_positions.add(Coord(14, 14).to_tuple())
 
         # Remove trees for the entrance
         objects.remove((tree, Coord(14,7)))
@@ -220,59 +223,53 @@ class ExampleHouse(Map):
         door = Door('int_entrance', linked_room="Paws in Peril House")
         objects.append((door, Coord(0, 4)))
 
+        all_positions = [Coord(x, y).to_tuple() for x in range(15) for y in range(15)]
+        free_positions = set(all_positions) - reserved_positions
+
+        # print(free_positions)
+
         # add rocks
-        rock = Rock()
-        objects.append((rock, Coord(8, 1)))
-        rock = Rock()
-        objects.append((rock, Coord(6,5)))
-        rock = Rock()
-        objects.append((rock, Coord(10,7)))
-
-
+        for _ in range(5):
+            rock = Rock()
+            pos = random.choice(list(free_positions))
+            objects.append((rock, Coord(pos[1], pos[0])))
+            free_positions.remove(pos)
+        
         # add flowers
-        daisy = Daisy()
-        objects.append((daisy, Coord(9, 13)))
-        orchid = Orchid()
-        objects.append((orchid, Coord(6, 10)))
-        daffodil = Daffodil()
-        objects.append((daffodil, Coord(12, 5)))
-        tulip = Tulip()
-        objects.append((tulip, Coord(11, 11)))
+        for _ in range(5):
+            flower = random.choice([Daisy(), Orchid(), Daffodil(), Tulip()])
+            pos = random.choice(list(free_positions))
+            objects.append((flower, Coord(pos[1], pos[0])))
+            free_positions.remove(pos)
 
-        #add cows 
-        cow = Cow()
-        objects.append((cow, Coord(9, 5)))
-        # cow = Cow()
-        # objects.append((cow, Coord(8, 7)))
-        cow = Cow()
-        objects.append((cow, Coord(7, 2)))
-        # cow = Cow()
-        # objects.append((cow, Coord(4, 3)))
+        # add cows
+        for _ in range(3):
+            cow = Cow()
+            pos = random.choice(list(free_positions))
+            objects.append((cow, Coord(pos[1], pos[0])))
+            free_positions.remove(pos)
 
-        #add monkeys
-        monkey = Monkey()
-        objects.append((monkey, Coord(3, 5)))
-        monkey = Monkey()
-        objects.append((monkey, Coord(2, 9)))
-        monkey = Monkey()
-        objects.append((monkey, Coord(4, 2)))
+        # add monkeys
+        for _ in range(3):
+            monkey = Monkey()
+            pos = random.choice(list(free_positions))
+            objects.append((monkey, Coord(pos[1], pos[0])))
+            free_positions.remove(pos)
+        
+        # add owls
+        for _ in range(3):
+            owl = Owl()
+            pos = random.choice(list(free_positions))
+            objects.append((owl, Coord(pos[1], pos[0])))
+            free_positions.remove(pos)
 
-        #add owls
-        owl = Owl()
-        objects.append((owl, Coord(4, 7)))
-        owl = Owl()
-        objects.append((owl, Coord(6, 3)))
-        owl = Owl()
-        objects.append((owl, Coord(8, 11)))
-
-        #add rabbits
-        rabbit = Rabbit()
-        objects.append((rabbit, Coord(5, 12)))
-        # rabbit = Rabbit()
-        # objects.append((rabbit, Coord(6, 3)))
-        rabbit = Rabbit()
-        objects.append((rabbit, Coord(7, 7)))
-
+        # add rabbits
+        for _ in range(3):
+            rabbit = Rabbit()
+            pos = random.choice(list(free_positions))
+            objects.append((rabbit, Coord(pos[1], pos[0])))
+            free_positions.remove(pos)
+        
         # add the npc
         hunter = Hunter( #todo
             encounter_text="I will hunt you down",
