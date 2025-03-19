@@ -182,11 +182,6 @@ class Hunter(Professor):
             direction: Literal["up", "down", "left", "right"] = random.choice(['up', 'down', 'left', 'right'])
             print(f"Hunter moves randomly: {direction}")
             return self.move(direction) 
-  
-
-
-
-
 # -------------------------------------- OUR HOUSE -----------------------------------------------------------------
 class ExampleHouse(Map):
     def __init__(self) -> None:
@@ -230,48 +225,51 @@ class ExampleHouse(Map):
         objects.append((rock, Coord(8, 1)))
         rock = Rock()
         objects.append((rock, Coord(6,5)))
+        rock = Rock()
+        objects.append((rock, Coord(10,7)))
+
 
         # add flowers
         daisy = Daisy()
         objects.append((daisy, Coord(9, 13)))
         orchid = Orchid()
-        objects.append((orchid, Coord(9, 10)))
+        objects.append((orchid, Coord(6, 10)))
         daffodil = Daffodil()
-        objects.append((daffodil, Coord(9, 5)))
+        objects.append((daffodil, Coord(12, 5)))
         tulip = Tulip()
-        objects.append((tulip, Coord(9, 11)))
+        objects.append((tulip, Coord(11, 11)))
 
         #add cows 
         cow = Cow()
-        objects.append((cow, Coord(5, 5)))
-        cow = Cow()
-        objects.append((cow, Coord(8, 7)))
+        objects.append((cow, Coord(9, 5)))
+        # cow = Cow()
+        # objects.append((cow, Coord(8, 7)))
         cow = Cow()
         objects.append((cow, Coord(7, 2)))
-        cow = Cow()
-        objects.append((cow, Coord(4, 3)))
+        # cow = Cow()
+        # objects.append((cow, Coord(4, 3)))
 
         #add monkeys
         monkey = Monkey()
         objects.append((monkey, Coord(3, 5)))
         monkey = Monkey()
-        objects.append((monkey, Coord(2, 7)))
+        objects.append((monkey, Coord(2, 9)))
         monkey = Monkey()
-        objects.append((monkey, Coord(1, 2)))
+        objects.append((monkey, Coord(4, 2)))
 
         #add owls
         owl = Owl()
         objects.append((owl, Coord(4, 7)))
         owl = Owl()
-        objects.append((owl, Coord(2, 3)))
+        objects.append((owl, Coord(6, 3)))
         owl = Owl()
-        objects.append((owl, Coord(1, 7)))
+        objects.append((owl, Coord(8, 11)))
 
         #add rabbits
         rabbit = Rabbit()
-        objects.append((rabbit, Coord(5, 7)))
-        rabbit = Rabbit()
-        objects.append((rabbit, Coord(6, 3)))
+        objects.append((rabbit, Coord(5, 12)))
+        # rabbit = Rabbit()
+        # objects.append((rabbit, Coord(6, 3)))
         rabbit = Rabbit()
         objects.append((rabbit, Coord(7, 7)))
 
