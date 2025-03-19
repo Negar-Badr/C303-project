@@ -47,6 +47,46 @@ class Cow(PressurePlate):
         room = player.get_current_room()
         room.remove_from_grid(self, self.get_position())
         return [] 
+    
+class Monkey(PressurePlate):
+    def __init__(self, image_name='animals/monkey'):
+        super().__init__(image_name)
+        
+    def player_entered(self, player) -> list[Message]:
+        """Handles when the player steps on a Monkey."""
+        game_state_manager = GameStateManager()  
+        game_state_manager.collect_animal("monkey")  # Update game state
+
+        room = player.get_current_room()
+        room.remove_from_grid(self, self.get_position())
+        return [] 
+    
+
+class Owl(PressurePlate):
+    def __init__(self, image_name='animals/owl'):
+        super().__init__(image_name)
+        
+    def player_entered(self, player) -> list[Message]:
+        """Handles when the player steps on a Owl."""
+        game_state_manager = GameStateManager()  
+        game_state_manager.collect_animal("owl")  # Update game state
+
+        room = player.get_current_room()
+        room.remove_from_grid(self, self.get_position())
+        return []
+    
+class Rabbit(PressurePlate):
+    def __init__(self, image_name='animals/rabbit'):
+        super().__init__(image_name)
+        
+    def player_entered(self, player) -> list[Message]:
+        """Handles when the player steps on a Rabbit."""
+        game_state_manager = GameStateManager()  
+        game_state_manager.collect_animal("rabbit")  # Update game state
+
+        room = player.get_current_room()
+        room.remove_from_grid(self, self.get_position())
+        return []
 
 class Rock(PressurePlate):
     def __init__(self, image_name='rock'):
@@ -72,6 +112,42 @@ class Daisy(PressurePlate):
         room.remove_from_grid(self, self.get_position())
         return []
 
+class Orchid(PressurePlate):
+    def __init__(self, image_name='flowers/Orchid'):
+        super().__init__(image_name)
+        
+    def player_entered(self, player) -> list[Message]:
+        """Handles when the player steps on an Orchid."""
+        game_state_manager = GameStateManager()  # Singleton instance
+        game_state_manager.collect_item("flower")  # Notify game state
+        room = player.get_current_room()
+        room.remove_from_grid(self, self.get_position())
+        return [] 
+    
+class Daffodil(PressurePlate):
+    def __init__(self, image_name='flowers/Daffodil'):
+        super().__init__(image_name)
+        
+    def player_entered(self, player) -> list[Message]:
+        """Handles when the player steps on an Daffodil."""
+        game_state_manager = GameStateManager()  # Singleton instance
+        game_state_manager.collect_item("flower")  # Notify game state
+        room = player.get_current_room()
+        room.remove_from_grid(self, self.get_position())
+        return []
+    
+class Tulip(PressurePlate):
+    def __init__(self, image_name='flowers/Tulip'):
+        super().__init__(image_name)
+        
+    def player_entered(self, player) -> list[Message]:
+        """Handles when the player steps on an Tulip."""
+        game_state_manager = GameStateManager()  # Singleton instance
+        game_state_manager.collect_item("flower")  # Notify game state
+        room = player.get_current_room()
+        room.remove_from_grid(self, self.get_position())
+        return []
+  
 class Hunter(Professor):
     def __init__(self, encounter_text: str, staring_distance: int = 0, facing_direction: Literal['up', 'down', 'left', 'right'] ='down') -> None:
         super().__init__(
@@ -103,18 +179,7 @@ class Hunter(Professor):
             print(f"Hunter moves randomly: {direction}")
             return self.move(direction)
     
-class Orchid(PressurePlate):
-    def __init__(self, image_name='flowers/Orchid'):
-        super().__init__(image_name)
-        
-    def player_entered(self, player) -> list[Message]:
-        """Handles when the player steps on an Orchid."""
-        game_state_manager = GameStateManager()  # Singleton instance
-        game_state_manager.collect_item("flower")  # Notify game state
-        room = player.get_current_room()
-        room.remove_from_grid(self, self.get_position())
-        return [] 
-    
+  
 class ExampleHouse(Map):
     def __init__(self) -> None:
         super().__init__(
@@ -160,9 +225,13 @@ class ExampleHouse(Map):
 
         # add flowers
         daisy = Daisy()
-        objects.append((daisy, Coord(9, 7)))
+        objects.append((daisy, Coord(9, 13)))
         orchid = Orchid()
-        objects.append((orchid, Coord(9, 6)))
+        objects.append((orchid, Coord(9, 10)))
+        daffodil = Daffodil()
+        objects.append((daffodil, Coord(9, 5)))
+        tulip = Tulip()
+        objects.append((tulip, Coord(9, 11)))
 
         #add cows 
         cow = Cow()
@@ -173,6 +242,33 @@ class ExampleHouse(Map):
         objects.append((cow, Coord(7, 2)))
         cow = Cow()
         objects.append((cow, Coord(4, 3)))
+
+        #add monkeys
+        monkey = Monkey()
+        objects.append((monkey, Coord(3, 5)))
+        monkey = Monkey()
+        objects.append((monkey, Coord(2, 7)))
+        monkey = Monkey()
+        objects.append((monkey, Coord(1, 2)))
+
+        #add owls
+        owl = Owl()
+        objects.append((owl, Coord(4, 7)))
+        owl = Owl()
+        objects.append((owl, Coord(2, 3)))
+        owl = Owl()
+        objects.append((owl, Coord(1, 7)))
+
+
+        #add rabbits
+        rabbit = Rabbit()
+        objects.append((rabbit, Coord(5, 7)))
+        rabbit = Rabbit()
+        objects.append((rabbit, Coord(6, 3)))
+        rabbit = Rabbit()
+        objects.append((rabbit, Coord(7, 7)))
+
+
 
         # add the npc
         hunter = Hunter( #todo
