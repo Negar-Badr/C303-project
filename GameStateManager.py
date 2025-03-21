@@ -33,15 +33,16 @@ class GameStateManager:
         #    self.set_game_state("win")  #  Win condition triggered!
 
     def update_hunter_strategy(self):
-        """Update the hunter's movement strategy based on collected items."""
+        from MovementStrategy import TeleportMovement, ShortestPathMovement, RandomMovement
         if "rock" in self.collected_items:
-            self.hunter_strategy = "teleportation"
+            self.hunter_strategy = TeleportMovement()
         elif "flower" in self.collected_items:
-            self.hunter_strategy = "shortest-path"
+            self.hunter_strategy = ShortestPathMovement()
         else:
-            self.hunter_strategy = "default"
+            self.hunter_strategy = RandomMovement()
 
-        print(f"Hunter strategy updated to: {self.hunter_strategy}")
+        print(f"Hunter strategy updated to: {self.hunter_strategy.__class__.__name__}")
+
 
     def set_game_state(self, state):
         """Change the game state."""
