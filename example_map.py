@@ -37,13 +37,6 @@ class Tree(MapObject):
     def __init__(self, image_name: str = 'tree_heart'):
         super().__init__(f"tile/background/{image_name}", passable=False)
 
-class Left(MapObject): 
-    def __init__(self, image_name: str = 'shallow_pit_left'):
-        super().__init__(f"tile/background/{image_name}", passable=True)
-class Right(MapObject): 
-    def __init__(self, image_name: str = 'shallow_pit_right'):
-        super().__init__(f"tile/background/{image_name}", passable=True)
-
 # -------------------------------------- ANIMALS -----------------------------------------------------------------
 class Cow(PressurePlate):
     def __init__(self, image_name='animals/cow'):
