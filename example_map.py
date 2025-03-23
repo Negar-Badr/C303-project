@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from tiles.base import MapObject
     from tiles.map_objects import *
     from ..NPC import NPC
+    from ..Player import HumanPlayer
 
 class ScorePressurePlate(PressurePlate):
     def __init__(self, image_name='pressure_plate'):
@@ -167,16 +168,42 @@ class Hunter(NPC):
         self.game_over_triggered = False  # Flag to stop movement after game over
         self.movement_strategy = None
         
-    def base_move(self, direction):
-        return super().move(direction)
-
-    def player_moved(self, player):
-        """ Hunter moves randomly but chases the player when close. """
+    # def _find_player(self):
+    #     """Return the first HumanPlayer found in the current room, if any."""
+    #     room = self.get_current_room()  # Assumes NPC/Player exposes this.
+    #     # # Then, load the module and extract the classes:
+    #     # player_module = self.load_player_module()
+    #     # HumanPlayer = player_module.HumanPlayer
+    #     if room:
+    #         for obj in room.get_objects():
+    #             if isinstance(obj, HumanPlayer):
+    #                 return obj
+    #     return None
+        
+    def update(self) -> list["Message"]:
+        """
+        This method is called periodically (similar to WalkingProfessor.update)
+        so that the hunter moves even when the player is not directly triggering movement.
+        It uses the current movement strategy.
+        """
+        print("IM HERE")
+        # Get the current movement strategy from the game state
+        gsm = GameStateManager()
+        current_strategy = gsm.get_hunter_strategy()
         messages = []
-        game_state_manager = GameStateManager()  # Singleton instance
-
-        # Stop all movement if the game is over
-        if game_state_manager.is_game_over():
+        #player = self._find_player(self, player)
+        
+        if current_strategy is not None:
+            self.movement_strategy = current_strategy
+        else:
+            # Fallback to default random movement if no strategy has been set
+            from .MovementStrategy import RandomMovement
+            self.movement_strategy = RandomMovement()
+            
+        direction_to_player = self.get_direction_toward(player.get_current_position())
+        self.movement_strategy.move(self, direction_to_player)
+            
+        if gsm.is_game_over():
             print("GAME OVER! Player cannot move anymore.")
             return []  # Block all movement
 
@@ -191,42 +218,59 @@ class Hunter(NPC):
             self.game_over_triggered = True  # Stop future movement
             self.game_over(player)
             return messages
-
-        # elif dist <= self._NPC__staring_distance:
-        #     # Player is in range → Chase them
-        #     direction_to_player = self.get_direction_toward(player.get_current_position())
-        #     print(f"Hunter is chasing the player in direction: {direction_to_player}")
-        #     move_messages = self.move(direction_to_player)
-        #     messages.extend(move_messages)
-
-        # else:
-        #     # Player is too far → Move randomly # TODO MORE AFTER WE HAVE MORE STRATEGIES
-        #     direction = random.choice(['up', 'down', 'left', 'right'])
-        #     print(f"Hunter moves randomly: {direction}")
-        #     move_messages = self.move(direction)
-        #     messages.extend(move_messages)
         
-        gsm = GameStateManager()
-        current_strategy = gsm.get_hunter_strategy()
-        if current_strategy is not None:
-            self.movement_strategy = current_strategy
-        else:
-            # Fallback to default random movement if no strategy has been set
-            from .MovementStrategy import RandomMovement
-            self.movement_strategy = RandomMovement()
-
-        if dist <= self._NPC__staring_distance:
-            direction_to_player = self.get_direction_toward(player.get_current_position())
-            print(f"Hunter is chasing the player in direction: {direction_to_player}")
-            move_messages = self.movement_strategy.move(self, direction_to_player)
-            messages.extend(move_messages)
-        else:
-            direction = random.choice(['up', 'down', 'left', 'right'])
-            print(f"Hunter moves randomly: {direction}")
-            move_messages = self.movement_strategy.move(self, direction)
-            messages.extend(move_messages)
-
         return messages
+        
+    def base_move(self, direction):
+        return super().move(direction)
+
+    # def player_moved(self, player):
+    #     """ Hunter moves randomly but chases the player when close. """
+    #     messages = []
+    #     game_state_manager = GameStateManager()  # Singleton instance
+
+    #     # Stop all movement if the game is over
+    #     if game_state_manager.is_game_over():
+    #         print("GAME OVER! Player cannot move anymore.")
+    #         return []  # Block all movement
+
+    #     # Get distance between Hunter and Player
+    #     dist = self._current_position.distance(player.get_current_position())
+
+    #     if dist == 1:
+    #         # Hunter is 1 tile away → Trigger Game Over
+    #         messages.append(EmoteMessage(self, player, 'exclamation', emote_pos=self._current_position))
+    #         messages.append(DialogueMessage(self, player, "GAME OVER! The hunter caught you.", self.get_image_name()))
+
+    #         self.game_over_triggered = True  # Stop future movement
+    #         self.game_over(player)
+    #         return messages
+
+    #     # elif dist <= self._NPC__staring_distance:
+    #     #     # Player is in range → Chase them
+    #     #     direction_to_player = self.get_direction_toward(player.get_current_position())
+    #     #     print(f"Hunter is chasing the player in direction: {direction_to_player}")
+    #     #     move_messages = self.move(direction_to_player)
+    #     #     messages.extend(move_messages)
+
+    #     # else:
+    #     #     # Player is too far → Move randomly # TODO MORE AFTER WE HAVE MORE STRATEGIES
+    #     #     direction = random.choice(['up', 'down', 'left', 'right'])
+    #     #     print(f"Hunter moves randomly: {direction}")
+    #     #     move_messages = self.move(direction)
+    #     #     messages.extend(move_messages)
+        
+            
+    #     # gsm = GameStateManager()
+    #     # current_strategy = gsm.get_hunter_strategy()
+    #     # if current_strategy is not None:
+    #     #     self.movement_strategy = current_strategy
+    #     # else:
+    #     #     # Fallback to default random movement if no strategy has been set
+    #     #     from .MovementStrategy import RandomMovement
+    #     #     self.movement_strategy = RandomMovement
+
+    #     return messages
 
     def get_direction_toward(self, target_position):
         """ Calculate the best move direction toward the player. """
