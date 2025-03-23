@@ -23,23 +23,21 @@ class ShortestPathMovement(MovementStrategy):
     
 class TeleportMovement(MovementStrategy):
     def __init__(self):
-        self.last_teleport_time = None
-
+        self.last_teleport_time = time.time()
+    
     def move(self, hunter, direction: str) -> list:
         now = time.time()
-        if self.last_teleport_time is None or now - self.last_teleport_time >= 5:
+        if now - self.last_teleport_time >= 10:
             self.last_teleport_time = now
-            # Teleport: move two tiles in the opposite direction of the chase
-            opposite = {'up': 'down', 'down': 'up', 'left': 'right', 'right': 'left'}
-            teleport_direction = opposite[direction] if direction in opposite else random.choice(['up', 'down', 'left', 'right'])
             messages = []
-            # “Teleport” by moving two tiles immediately
+            print(f"Teleporting towards {direction}!")
+            # Teleport two tiles toward the player by invoking base_move twice in the provided direction.
             for _ in range(2):
-                messages.extend(hunter.base_move(teleport_direction))
+                messages.extend(hunter.base_move(direction))
             return messages
         else:
-            # Fall back to shortest-path behavior if not time to teleport
             return hunter.base_move(direction)
+
 
     
     
