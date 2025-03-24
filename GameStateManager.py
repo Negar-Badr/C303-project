@@ -1,3 +1,5 @@
+from .MovementStrategy import TeleportMovement, ShortestPathMovement, RandomMovement
+
 class GameStateManager:
     _instance = None  
 
@@ -22,7 +24,7 @@ class GameStateManager:
         """Update game state when the player collects an item."""
         self.collected_items.add(item)
         print(f"Player collected: {item}")
-        #self.update_hunter_strategy() # TODO, YOU CAN UNCOMMENT IT ONCE WE FINISH WRITING THE STRATEGIES
+        #self.update_hunter_strategy() 
 
     def collect_animal(self, animal_name):
         """Update game state when the player collects an animal."""
@@ -33,7 +35,6 @@ class GameStateManager:
         #    self.set_game_state("win")  #  Win condition triggered!
 
     def update_hunter_strategy(self):
-        from MovementStrategy import TeleportMovement, ShortestPathMovement, RandomMovement
         if "rock" in self.collected_items:
             self.hunter_strategy = TeleportMovement()
         elif "flower" in self.collected_items:
@@ -42,7 +43,6 @@ class GameStateManager:
             self.hunter_strategy = RandomMovement()
 
         print(f"Hunter strategy updated to: {self.hunter_strategy.__class__.__name__}")
-
 
     def set_game_state(self, state):
         """Change the game state."""
