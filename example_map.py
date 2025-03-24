@@ -1,4 +1,3 @@
-
 from .imports import *
 import math
 import random
@@ -11,7 +10,6 @@ if TYPE_CHECKING:
     from maps.base import Map
     from tiles.base import MapObject
     from tiles.map_objects import *
-    from ..NPC import NPC
 
 class ScorePressurePlate(PressurePlate):
     def __init__(self, image_name='pressure_plate'):
@@ -37,6 +35,13 @@ class Tree(MapObject):
     def __init__(self, image_name: str = 'tree_heart'):
         super().__init__(f"tile/background/{image_name}", passable=False)
 
+class Left(MapObject): 
+    def __init__(self, image_name: str = 'shallow_pit_left'):
+        super().__init__(f"tile/background/{image_name}", passable=True)
+class Right(MapObject): 
+    def __init__(self, image_name: str = 'shallow_pit_right'):
+        super().__init__(f"tile/background/{image_name}", passable=True)
+
 # -------------------------------------- ANIMALS -----------------------------------------------------------------
 class Cow(PressurePlate):
     def __init__(self, image_name='animals/cow'):
@@ -44,6 +49,11 @@ class Cow(PressurePlate):
         
     def player_entered(self, player) -> list[Message]:
         """Handles when the player steps on a Cow."""
+        # If the actor can't collect items, do nothing.
+        if not getattr(player, "can_collect_items", True):
+            return []
+
+    # Otherwise, continue with collection logic...
         game_state_manager = GameStateManager()  
         game_state_manager.collect_animal("cow")  # Update game state
 
@@ -57,6 +67,8 @@ class Monkey(PressurePlate):
         
     def player_entered(self, player) -> list[Message]:
         """Handles when the player steps on a Monkey."""
+        if not getattr(player, "can_collect_items", True):
+            return []
         game_state_manager = GameStateManager()  
         game_state_manager.collect_animal("monkey")  # Update game state
 
@@ -70,6 +82,8 @@ class Owl(PressurePlate):
         
     def player_entered(self, player) -> list[Message]:
         """Handles when the player steps on a Owl."""
+        if not getattr(player, "can_collect_items", True):
+            return []
         game_state_manager = GameStateManager()  
         game_state_manager.collect_animal("owl")  # Update game state
 
@@ -83,6 +97,8 @@ class Rabbit(PressurePlate):
         
     def player_entered(self, player) -> list[Message]:
         """Handles when the player steps on a Rabbit."""
+        if not getattr(player, "can_collect_items", True):
+            return []
         game_state_manager = GameStateManager()  
         game_state_manager.collect_animal("rabbit")  # Update game state
 
@@ -97,6 +113,8 @@ class Rock(PressurePlate):
         
     def player_entered(self, player) -> list[Message]:
         """Handles when the player steps on a Rock."""
+        if not getattr(player, "can_collect_items", True):
+            return []
         game_state_manager = GameStateManager()  # Singleton instance
         game_state_manager.collect_item("rock")  # Notify game state
         room = player.get_current_room()
@@ -110,6 +128,8 @@ class Daisy(PressurePlate):
         
     def player_entered(self, player) -> list[Message]:
         """Handles when the player steps on a Daisy."""
+        if not getattr(player, "can_collect_items", True):
+            return []
         game_state_manager = GameStateManager()  # Singleton instance
         game_state_manager.collect_item("flower")  # Notify game state
         room = player.get_current_room()
@@ -122,6 +142,8 @@ class Orchid(PressurePlate):
         
     def player_entered(self, player) -> list[Message]:
         """Handles when the player steps on an Orchid."""
+        if not getattr(player, "can_collect_items", True):
+            return []
         game_state_manager = GameStateManager()  # Singleton instance
         game_state_manager.collect_item("flower")  # Notify game state
         room = player.get_current_room()
@@ -134,6 +156,8 @@ class Daffodil(PressurePlate):
         
     def player_entered(self, player) -> list[Message]:
         """Handles when the player steps on an Daffodil."""
+        if not getattr(player, "can_collect_items", True):
+            return []
         game_state_manager = GameStateManager()  # Singleton instance
         game_state_manager.collect_item("flower")  # Notify game state
         room = player.get_current_room()
@@ -146,6 +170,8 @@ class Tulip(PressurePlate):
         
     def player_entered(self, player) -> list[Message]:
         """Handles when the player steps on an Tulip."""
+        if not getattr(player, "can_collect_items", True):
+            return []
         game_state_manager = GameStateManager()  # Singleton instance
         game_state_manager.collect_item("flower")  # Notify game state
         room = player.get_current_room()
@@ -188,12 +214,12 @@ class Hunter(NPC):
             self.game_over(player)
             return messages
 
-        elif dist <= self._NPC__staring_distance:
-            # Player is in range → Chase them
-            direction_to_player = self.get_direction_toward(player.get_current_position())
-            print(f"Hunter is chasing the player in direction: {direction_to_player}")
-            move_messages = self.move(direction_to_player)
-            messages.extend(move_messages)
+        # elif dist <= self._NPC__staring_distance:
+        #     # Player is in range → Chase them
+        #     direction_to_player = self.get_direction_toward(player.get_current_position())
+        #     print(f"Hunter is chasing the player in direction: {direction_to_player}")
+        #     move_messages = self.move(direction_to_player)
+        #     messages.extend(move_messages)
 
         else:
             # Player is too far → Move randomly # TODO MORE AFTER WE HAVE MORE STRATEGIES
@@ -204,15 +230,15 @@ class Hunter(NPC):
 
         return messages
 
-    def get_direction_toward(self, target_position):
-        """ Calculate the best move direction toward the player. """
-        dx = target_position.x - self._current_position.x
-        dy = target_position.y - self._current_position.y
+    # def get_direction_toward(self, target_position):
+    #     """ Calculate the best move direction toward the player. """
+    #     dx = target_position.x - self._current_position.x
+    #     dy = target_position.y - self._current_position.y
 
-        if abs(dx) > abs(dy):
-            return 'right' if dx > 0 else 'left'
-        else:
-            return 'down' if dy > 0 else 'up'
+    #     if abs(dx) > abs(dy):
+    #         return 'right' if dx > 0 else 'left'
+    #     else:
+    #         return 'down' if dy > 0 else 'up'
 
     def game_over(self, player):
         """ Handles game over logic when the hunter catches the player. """
@@ -240,6 +266,7 @@ class ExampleHouse(Map):
             background_tile_image='grass',
             background_music='blithe', #todo
         )
+
     
     def get_objects(self) -> list[tuple[MapObject, Coord]]:
         objects: list[tuple[MapObject, Coord]] = []
@@ -318,10 +345,12 @@ class ExampleHouse(Map):
             free_positions.remove(pos)
         
         # add the npc
-        hunter = Hunter( #todo
+        # Add the Hunter as an NPC that should not collect items:
+        hunter = Hunter(
             encounter_text="I will hunt you down",
             staring_distance=1,
         )
+        hunter.can_collect_items = False  # This flag will be checked by collectible items
         objects.append((hunter, Coord(3,8)))
 
         # add a pressure plate
