@@ -4,6 +4,7 @@ import math
 import random
 from typing import Literal
 from .GameStateManager import GameStateManager
+from .MovementStrategy import RandomMovement
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -11,7 +12,7 @@ if TYPE_CHECKING:
     from maps.base import Map
     from tiles.base import MapObject
     from tiles.map_objects import *
-    from ..NPC import NPC
+    from NPC import NPC
 
 class ScorePressurePlate(PressurePlate):
     def __init__(self, image_name='pressure_plate'):
@@ -165,14 +166,33 @@ class Hunter(NPC):
             staring_distance=staring_distance,
         )
         self.game_over_triggered = False  # Flag to stop movement after game over
-
-    def player_moved(self, player):
-        """ Hunter moves randomly but chases the player when close. """
+        self.movement_strategy = RandomMovement
+    
+    def _find_player(self):
+        room = self.get_current_room()
+        if hasattr(room, 'player_instance'):
+            return room.player_instance
+        return None
+        
+    def update(self) -> list["Message"]:
+        """
+        This method is called periodically (similar to WalkingProfessor.update)
+        so that the hunter moves even when the player is not directly triggering movement.
+        It uses the current movement strategy.
+        """
+        # Get the current movement strategy from the game state
+        gsm = GameStateManager()
+        gsm.update_hunter_strategy()
+        current_strategy = gsm.get_hunter_strategy()
         messages = []
-        game_state_manager = GameStateManager()  # Singleton instance
-
-        # Stop all movement if the game is over
-        if game_state_manager.is_game_over():
+        player = self._find_player()
+        
+        self.movement_strategy = current_strategy
+    
+        direction_to_player = self.get_direction_toward(player.get_current_position())
+        self.movement_strategy.move(self, direction_to_player)
+            
+        if gsm.is_game_over():
             print("GAME OVER! Player cannot move anymore.")
             return []  # Block all movement
 
@@ -187,22 +207,11 @@ class Hunter(NPC):
             self.game_over_triggered = True  # Stop future movement
             self.game_over(player)
             return messages
-
-        elif dist <= self._NPC__staring_distance:
-            # Player is in range → Chase them
-            direction_to_player = self.get_direction_toward(player.get_current_position())
-            print(f"Hunter is chasing the player in direction: {direction_to_player}")
-            move_messages = self.move(direction_to_player)
-            messages.extend(move_messages)
-
-        else:
-            # Player is too far → Move randomly # TODO MORE AFTER WE HAVE MORE STRATEGIES
-            direction = random.choice(['up', 'down', 'left', 'right'])
-            print(f"Hunter moves randomly: {direction}")
-            move_messages = self.move(direction)
-            messages.extend(move_messages)
-
+        
         return messages
+    
+    def base_move(self, direction):
+        return self.move(direction)
 
     def get_direction_toward(self, target_position):
         """ Calculate the best move direction toward the player. """
@@ -240,6 +249,18 @@ class ExampleHouse(Map):
             background_tile_image='grass',
             background_music='blithe', #todo
         )
+        
+    def add_player(self, player: "Player", entry_point=None) -> None:
+        super().add_player(player, entry_point)
+        self.player_instance = player
+        print(f"Player {player.get_name()} has entered the map.")
+        
+    def update(self) -> list[Message]:
+        messages = []
+        objects = getattr(self, '_Map__objects', [])
+        for obj in list(objects):  # iterate over a copy
+            messages.extend(obj.update())
+        return messages
     
     def get_objects(self) -> list[tuple[MapObject, Coord]]:
         objects: list[tuple[MapObject, Coord]] = []
