@@ -4,6 +4,8 @@ import math
 import random
 from typing import Literal
 from .GameStateManager import GameStateManager
+from .Animal import Cow, Monkey, Owl, Rabbit
+from .Flower import Daisy, Orchid, Daffodil, Tulip
 from .MovementStrategy import RandomMovement
 from collections.abc import Callable
 from .commands import JumpCommand
@@ -40,59 +42,6 @@ class Tree(MapObject):
     def __init__(self, image_name: str = 'tree_heart'):
         super().__init__(f"tile/background/{image_name}", passable=False)
 
-# -------------------------------------- ANIMALS -----------------------------------------------------------------
-class Cow(PressurePlate):
-    def __init__(self, image_name='animals/cow'):
-        super().__init__(image_name)
-        
-    def player_entered(self, player) -> list[Message]:
-        """Handles when the player steps on a Cow."""
-        game_state_manager = GameStateManager()  
-        game_state_manager.collect_animal("cow")  # Update game state
-
-        room = player.get_current_room()
-        room.remove_from_grid(self, self.get_position())
-        return [] 
-    
-class Monkey(PressurePlate):
-    def __init__(self, image_name='animals/monkey'):
-        super().__init__(image_name)
-        
-    def player_entered(self, player) -> list[Message]:
-        """Handles when the player steps on a Monkey."""
-        game_state_manager = GameStateManager()  
-        game_state_manager.collect_animal("monkey")  # Update game state
-
-        room = player.get_current_room()
-        room.remove_from_grid(self, self.get_position())
-        return [] 
-    
-class Owl(PressurePlate):
-    def __init__(self, image_name='animals/owl'):
-        super().__init__(image_name)
-        
-    def player_entered(self, player) -> list[Message]:
-        """Handles when the player steps on a Owl."""
-        game_state_manager = GameStateManager()  
-        game_state_manager.collect_animal("owl")  # Update game state
-
-        room = player.get_current_room()
-        room.remove_from_grid(self, self.get_position())
-        return []
-    
-class Rabbit(PressurePlate):
-    def __init__(self, image_name='animals/rabbit'):
-        super().__init__(image_name)
-        
-    def player_entered(self, player) -> list[Message]:
-        """Handles when the player steps on a Rabbit."""
-        game_state_manager = GameStateManager()  
-        game_state_manager.collect_animal("rabbit")  # Update game state
-
-        room = player.get_current_room()
-        room.remove_from_grid(self, self.get_position())
-        return []
-
 # -------------------------------------- ROCKS -----------------------------------------------------------------
 class Rock(PressurePlate):
     def __init__(self, image_name='rock'):
@@ -100,61 +49,12 @@ class Rock(PressurePlate):
         
     def player_entered(self, player) -> list[Message]:
         """Handles when the player steps on a Rock."""
+        if hasattr(player, "is_hunter"): return []
         game_state_manager = GameStateManager()  # Singleton instance
         game_state_manager.collect_item("rock")  # Notify game state
         room = player.get_current_room()
         room.remove_from_grid(self, self.get_position())
         return []
-
-# -------------------------------------- FLOWERS -----------------------------------------------------------------
-class Daisy(PressurePlate):
-    def __init__(self, image_name='flowers/Daisy'):
-        super().__init__(image_name)
-        
-    def player_entered(self, player) -> list[Message]:
-        """Handles when the player steps on a Daisy."""
-        game_state_manager = GameStateManager()  # Singleton instance
-        game_state_manager.collect_item("flower")  # Notify game state
-        room = player.get_current_room()
-        room.remove_from_grid(self, self.get_position())
-        return []
-
-class Orchid(PressurePlate):
-    def __init__(self, image_name='flowers/Orchid'):
-        super().__init__(image_name)
-        
-    def player_entered(self, player) -> list[Message]:
-        """Handles when the player steps on an Orchid."""
-        game_state_manager = GameStateManager()  # Singleton instance
-        game_state_manager.collect_item("flower")  # Notify game state
-        room = player.get_current_room()
-        room.remove_from_grid(self, self.get_position())
-        return [] 
-    
-class Daffodil(PressurePlate):
-    def __init__(self, image_name='flowers/Daffodil'):
-        super().__init__(image_name)
-        
-    def player_entered(self, player) -> list[Message]:
-        """Handles when the player steps on an Daffodil."""
-        game_state_manager = GameStateManager()  # Singleton instance
-        game_state_manager.collect_item("flower")  # Notify game state
-        room = player.get_current_room()
-        room.remove_from_grid(self, self.get_position())
-        return []
-    
-class Tulip(PressurePlate):
-    def __init__(self, image_name='flowers/Tulip'):
-        super().__init__(image_name)
-        
-    def player_entered(self, player) -> list[Message]:
-        """Handles when the player steps on an Tulip."""
-        game_state_manager = GameStateManager()  # Singleton instance
-        game_state_manager.collect_item("flower")  # Notify game state
-        room = player.get_current_room()
-        room.remove_from_grid(self, self.get_position())
-        return []
-  
 # -------------------------------------- HUNTER -----------------------------------------------------------------
 class Hunter(NPC):
     """ A hunter NPC that moves randomly but chases the player when close. """
@@ -169,6 +69,7 @@ class Hunter(NPC):
         )
         self.game_over_triggered = False  # Flag to stop movement after game over
         self.movement_strategy = RandomMovement
+        self.is_hunter = True
     
     def _find_player(self):
         room = self.get_current_room()
@@ -177,11 +78,7 @@ class Hunter(NPC):
         return None
         
     def update(self) -> list["Message"]:
-        """
-        This method is called periodically (similar to WalkingProfessor.update)
-        so that the hunter moves even when the player is not directly triggering movement.
-        It uses the current movement strategy.
-        """
+        """Update hunter's position using the current movement strategy from GameStateManager."""
         # Get the current movement strategy from the game state
         gsm = GameStateManager()
         gsm.update_hunter_strategy()
@@ -192,7 +89,7 @@ class Hunter(NPC):
         self.movement_strategy = current_strategy
     
         direction_to_player = self.get_direction_toward(player.get_current_position())
-        self.movement_strategy.move(self, direction_to_player)
+        messages += self.movement_strategy.move(self, direction_to_player)
             
         if gsm.is_game_over():
             print("GAME OVER! Player cannot move anymore.")
