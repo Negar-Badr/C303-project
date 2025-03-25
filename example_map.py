@@ -52,56 +52,6 @@ class Rock(PressurePlate):
         room = player.get_current_room()
         room.remove_from_grid(self, self.get_position())
         return []
-
-# -------------------------------------- FLOWERS -----------------------------------------------------------------
-# class Daisy(PressurePlate):
-#     def __init__(self, image_name='flowers/Daisy'):
-#         super().__init__(image_name)
-        
-#     def player_entered(self, player) -> list[Message]:
-#         """Handles when the player steps on a Daisy."""
-#         game_state_manager = GameStateManager()  # Singleton instance
-#         game_state_manager.collect_item("flower")  # Notify game state
-#         room = player.get_current_room()
-#         room.remove_from_grid(self, self.get_position())
-#         return []
-
-# class Orchid(PressurePlate):
-#     def __init__(self, image_name='flowers/Orchid'):
-#         super().__init__(image_name)
-        
-#     def player_entered(self, player) -> list[Message]:
-#         """Handles when the player steps on an Orchid."""
-#         game_state_manager = GameStateManager()  # Singleton instance
-#         game_state_manager.collect_item("flower")  # Notify game state
-#         room = player.get_current_room()
-#         room.remove_from_grid(self, self.get_position())
-#         return [] 
-    
-# class Daffodil(PressurePlate):
-#     def __init__(self, image_name='flowers/Daffodil'):
-#         super().__init__(image_name)
-        
-#     def player_entered(self, player) -> list[Message]:
-#         """Handles when the player steps on an Daffodil."""
-#         game_state_manager = GameStateManager()  # Singleton instance
-#         game_state_manager.collect_item("flower")  # Notify game state
-#         room = player.get_current_room()
-#         room.remove_from_grid(self, self.get_position())
-#         return []
-    
-# class Tulip(PressurePlate):
-#     def __init__(self, image_name='flowers/Tulip'):
-#         super().__init__(image_name)
-        
-#     def player_entered(self, player) -> list[Message]:
-#         """Handles when the player steps on an Tulip."""
-#         game_state_manager = GameStateManager()  # Singleton instance
-#         game_state_manager.collect_item("flower")  # Notify game state
-#         room = player.get_current_room()
-#         room.remove_from_grid(self, self.get_position())
-#         return []
-  
 # -------------------------------------- HUNTER -----------------------------------------------------------------
 class Hunter(NPC):
     """ A hunter NPC that moves randomly but chases the player when close. """
@@ -116,7 +66,6 @@ class Hunter(NPC):
         )
         self.game_over_triggered = False  # Flag to stop movement after game over
         self.movement_strategy = RandomMovement
-        self.is_hunter = True
     
     def _find_player(self):
         room = self.get_current_room()
