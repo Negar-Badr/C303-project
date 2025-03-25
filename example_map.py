@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from maps.base import Map
     from tiles.base import MapObject
     from tiles.map_objects import *
-    from NPC import NPC
+    from NPC import NPC, WalkingProfessor
 
 class ScorePressurePlate(PressurePlate):
     def __init__(self, image_name='pressure_plate'):
@@ -45,6 +45,8 @@ class Cow(PressurePlate):
         
     def player_entered(self, player) -> list[Message]:
         """Handles when the player steps on a Cow."""
+        if getattr(player, "is_hunter", False):
+            return []
         game_state_manager = GameStateManager()  
         game_state_manager.collect_animal("cow")  # Update game state
 
@@ -58,6 +60,8 @@ class Monkey(PressurePlate):
         
     def player_entered(self, player) -> list[Message]:
         """Handles when the player steps on a Monkey."""
+        if getattr(player, "is_hunter", False):
+            return []
         game_state_manager = GameStateManager()  
         game_state_manager.collect_animal("monkey")  # Update game state
 
@@ -71,6 +75,8 @@ class Owl(PressurePlate):
         
     def player_entered(self, player) -> list[Message]:
         """Handles when the player steps on a Owl."""
+        if getattr(player, "is_hunter", False):
+            return []
         game_state_manager = GameStateManager()  
         game_state_manager.collect_animal("owl")  # Update game state
 
@@ -84,6 +90,8 @@ class Rabbit(PressurePlate):
         
     def player_entered(self, player) -> list[Message]:
         """Handles when the player steps on a Rabbit."""
+        if getattr(player, "is_hunter", False):
+            return []
         game_state_manager = GameStateManager()  
         game_state_manager.collect_animal("rabbit")  # Update game state
 
@@ -98,6 +106,8 @@ class Rock(PressurePlate):
         
     def player_entered(self, player) -> list[Message]:
         """Handles when the player steps on a Rock."""
+        if getattr(player, "is_hunter", False):
+            return []
         game_state_manager = GameStateManager()  # Singleton instance
         game_state_manager.collect_item("rock")  # Notify game state
         room = player.get_current_room()
@@ -111,6 +121,8 @@ class Daisy(PressurePlate):
         
     def player_entered(self, player) -> list[Message]:
         """Handles when the player steps on a Daisy."""
+        if getattr(player, "is_hunter", False):
+            return []
         game_state_manager = GameStateManager()  # Singleton instance
         game_state_manager.collect_item("flower")  # Notify game state
         room = player.get_current_room()
@@ -123,6 +135,8 @@ class Orchid(PressurePlate):
         
     def player_entered(self, player) -> list[Message]:
         """Handles when the player steps on an Orchid."""
+        if getattr(player, "is_hunter", False):
+            return []
         game_state_manager = GameStateManager()  # Singleton instance
         game_state_manager.collect_item("flower")  # Notify game state
         room = player.get_current_room()
@@ -135,6 +149,8 @@ class Daffodil(PressurePlate):
         
     def player_entered(self, player) -> list[Message]:
         """Handles when the player steps on an Daffodil."""
+        if getattr(player, "is_hunter", False):
+            return []
         game_state_manager = GameStateManager()  # Singleton instance
         game_state_manager.collect_item("flower")  # Notify game state
         room = player.get_current_room()
@@ -147,6 +163,8 @@ class Tulip(PressurePlate):
         
     def player_entered(self, player) -> list[Message]:
         """Handles when the player steps on an Tulip."""
+        if getattr(player, "is_hunter", False):
+            return []
         game_state_manager = GameStateManager()  # Singleton instance
         game_state_manager.collect_item("flower")  # Notify game state
         room = player.get_current_room()
@@ -167,6 +185,7 @@ class Hunter(NPC):
         )
         self.game_over_triggered = False  # Flag to stop movement after game over
         self.movement_strategy = RandomMovement
+        self.is_hunter = True
     
     def _find_player(self):
         room = self.get_current_room()
@@ -175,40 +194,40 @@ class Hunter(NPC):
         return None
         
     def update(self) -> list["Message"]:
-        """
-        This method is called periodically (similar to WalkingProfessor.update)
-        so that the hunter moves even when the player is not directly triggering movement.
-        It uses the current movement strategy.
-        """
-        # Get the current movement strategy from the game state
+        """Update hunter's position using the current movement strategy from GameStateManager."""
         gsm = GameStateManager()
-        gsm.update_hunter_strategy()
-        current_strategy = gsm.get_hunter_strategy()
+        gsm.update_hunter_strategy()  # Optional: updates strategy based on game conditions
+        strategy = gsm.get_hunter_strategy()
+
+        self.movement_strategy = strategy  # Update Hunter's current strategy
         messages = []
+
         player = self._find_player()
-        
-        self.movement_strategy = current_strategy
-    
-        direction_to_player = self.get_direction_toward(player.get_current_position())
-        self.movement_strategy.move(self, direction_to_player)
-            
+        if player is None:
+            print("[Hunter] No player found in room.")
+            return []
+
+        # If game is over, stop moving
         if gsm.is_game_over():
-            print("GAME OVER! Player cannot move anymore.")
-            return []  # Block all movement
+            print("[Hunter] Game over, not moving.")
+            return []
 
-        # Get distance between Hunter and Player
-        dist = self._current_position.distance(player.get_current_position())
+        # Choose direction toward player (used by some strategies like ShortestPathMovement)
+        direction_to_player = self.get_direction_toward(player.get_current_position())
 
-        if dist == 1:
-            # Hunter is 1 tile away → Trigger Game Over
+        # Let the strategy decide how to move
+        print(f"[Hunter] Using strategy: {self.movement_strategy.__class__.__name__}")
+        messages += self.movement_strategy.move(self, direction_to_player)
+
+        # Trigger game over if adjacent to player
+        if self._current_position.distance(player.get_current_position()) == 1:
+            print("[Hunter] Player caught!")
             messages.append(EmoteMessage(self, player, 'exclamation', emote_pos=self._current_position))
             messages.append(DialogueMessage(self, player, "GAME OVER! The hunter caught you.", self.get_image_name()))
-
-            self.game_over_triggered = True  # Stop future movement
             self.game_over(player)
-            return messages
-        
+
         return messages
+
     
     def base_move(self, direction):
         return self.move(direction)
@@ -344,6 +363,13 @@ class ExampleHouse(Map):
             staring_distance=1,
         )
         objects.append((hunter, Coord(3,8)))
+
+        # prof = WalkingProfessor(
+        #     encounter_text="hi",
+        #     staring_distance=1,
+        # )
+        # objects.append((prof, Coord(6,8)))
+
 
         # add a pressure plate
         # pressure_plate = ScorePressurePlate()
