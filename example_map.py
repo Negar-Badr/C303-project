@@ -252,15 +252,35 @@ class ExampleHouse(Map):
             background_music='blithe', #todo
         )
 
-    def _get_keybinds(self) -> dict[str, Callable[["HumanPlayer"], list["Message"]]]:
-        # Get the default movement commands
-        keybinds = super()._get_keybinds()
+    # def _get_keybinds(self) -> dict[str, Callable[["HumanPlayer"], list["Message"]]]:
+    #     # Get the default movement commands
+    #     keybinds = super()._get_keybinds()
 
-        # Add custom commands (e.g. "j" for jump)
-        keybinds["j"] = lambda player: JumpCommand().execute(player)
+    #     # Add custom commands (e.g. "j" for jump)
+    #     keybinds["j"] = lambda player: JumpCommand().execute(player)
+
+    #     return keybinds
+
+    def _get_keybinds(self) -> dict[str, Callable[["HumanPlayer"], list["Message"]]]:
+        keybinds = super()._get_keybinds()  # keep built-in ones if needed
+
+        def move_with_direction(direction: str):
+            return lambda player: self._remember_and_move(player, direction)
+
+        keybinds.update({
+            "up": move_with_direction("up"),
+            "down": move_with_direction("down"),
+            "left": move_with_direction("left"),
+            "right": move_with_direction("right"),
+            "j": lambda player: JumpCommand().execute(player),  # jump still works
+        })
 
         return keybinds
-        
+
+    def _remember_and_move(self, player: "HumanPlayer", direction: str) -> list["Message"]:
+        player.set_state("last_direction", direction)
+        return player.move(direction)
+  
     def add_player(self, player: "Player", entry_point=None) -> None:
         super().add_player(player, entry_point)
         self.player_instance = player
