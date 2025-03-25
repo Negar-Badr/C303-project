@@ -76,11 +76,7 @@ class Hunter(NPC):
         return None
         
     def update(self) -> list["Message"]:
-        """
-        This method is called periodically (similar to WalkingProfessor.update)
-        so that the hunter moves even when the player is not directly triggering movement.
-        It uses the current movement strategy.
-        """
+        """Update hunter's position using the current movement strategy from GameStateManager."""
         # Get the current movement strategy from the game state
         gsm = GameStateManager()
         gsm.update_hunter_strategy()
@@ -91,7 +87,7 @@ class Hunter(NPC):
         self.movement_strategy = current_strategy
     
         direction_to_player = self.get_direction_toward(player.get_current_position())
-        self.movement_strategy.move(self, direction_to_player)
+        messages += self.movement_strategy.move(self, direction_to_player)
             
         if gsm.is_game_over():
             print("GAME OVER! Player cannot move anymore.")
