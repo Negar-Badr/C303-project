@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from maps.base import Map
     from tiles.base import MapObject
     from tiles.map_objects import *
-    from ..NPC import NPC
+    from NPC import NPC
 
 class ScorePressurePlate(PressurePlate):
     def __init__(self, image_name='pressure_plate'):
@@ -182,7 +182,7 @@ class Hunter(NPC):
         """
         # Get the current movement strategy from the game state
         gsm = GameStateManager()
-        gsm.update_hunter_strategy
+        gsm.update_hunter_strategy()
         current_strategy = gsm.get_hunter_strategy()
         messages = []
         player = self._find_player()

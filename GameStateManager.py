@@ -17,7 +17,7 @@ class GameStateManager:
             self.collected_items = set()  # Stores collected items (e.g., rock, flower)
             self.collected_animals = 0  # Count of collected animals
             self.total_animals = 5 # total animal to save
-            self.hunter_strategy = None  # Strategy pattern for hunter movement
+            self.hunter_strategy = RandomMovement  # Strategy pattern for hunter movement
             self._initialized = True  # Mark as true at first 
 
     def collect_item(self, item):

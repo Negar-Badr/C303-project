@@ -10,7 +10,7 @@ class MovementStrategy(ABC):
     
     
 class RandomMovement(MovementStrategy):
-    def move(self, hunter, direction: None) -> list["Message"]:
+    def move(self, hunter, direction = None) -> list["Message"]:
         random_direction = random.choice(['up', 'down', 'left', 'right'])
         print(f"RandomMovement: moving {random_direction}")
         return hunter.base_move(random_direction)
