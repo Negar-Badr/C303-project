@@ -7,6 +7,7 @@ from .GameStateManager import GameStateManager
 from .Animal import Cow, Monkey, Owl, Rabbit
 from .Flower import Daisy, Orchid, Daffodil, Tulip
 from .MovementStrategy import RandomMovement
+from .commands import JumpCommand
 from collections.abc import Callable
 from .commands import JumpCommand
 
@@ -17,7 +18,7 @@ if TYPE_CHECKING:
     from tiles.base import MapObject
     from tiles.map_objects import *
     from NPC import NPC
-
+    
 class ScorePressurePlate(PressurePlate):
     def __init__(self, image_name='pressure_plate'):
         super().__init__(image_name)
@@ -52,9 +53,11 @@ class Rock(PressurePlate):
         if hasattr(player, "is_hunter"): return []
         game_state_manager = GameStateManager()  # Singleton instance
         game_state_manager.collect_item("rock")  # Notify game state
+        
         room = player.get_current_room()
-        room.remove_from_grid(self, self.get_position())
-        return []
+        room.remove_from_grid(self, self.get_position())  
+        
+        return [ChatMessage(StaticSender("UPDATE"), room, f"You stepped on a rock! The hunter speeds up...")]
 # -------------------------------------- HUNTER -----------------------------------------------------------------
 class Hunter(NPC):
     """ A hunter NPC that moves randomly but chases the player when close. """

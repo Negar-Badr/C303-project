@@ -1,6 +1,7 @@
 from .imports import *
 from .GameStateManager import GameStateManager
 from abc import ABC
+from .utils import StaticSender
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -8,7 +9,6 @@ if TYPE_CHECKING:
     from maps.base import Map
     from tiles.base import MapObject
     from tiles.map_objects import *
-    from NPC import NPC
 
 class Flower(PressurePlate, ABC):
     def __init__(self, flower_name: str, image_name: str):
@@ -19,11 +19,11 @@ class Flower(PressurePlate, ABC):
         if hasattr(player, "is_hunter"): return []
         gsm = GameStateManager()
         gsm.collect_item("flower")
-
+        
         room = player.get_current_room()
-        room.remove_from_grid(self, self.get_position())
-
-        return []    
+        room.remove_from_grid(self, self.get_position()) 
+        
+        return [ChatMessage(StaticSender("UPDATE"), room, f"You stepped on a {self.flower_name}! The hunter slows down...")]
     
 class Daisy(Flower):
     def __init__(self):
