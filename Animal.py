@@ -1,6 +1,7 @@
 from .imports import *
 from .GameStateManager import GameStateManager
 from abc import ABC
+from .utils import StaticSender
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -8,8 +9,6 @@ if TYPE_CHECKING:
     from maps.base import Map
     from tiles.base import MapObject
     from tiles.map_objects import *
-    from NPC import NPC
-
 
 class Animal(PressurePlate, ABC):
     def __init__(self, animal_name: str, image_name: str):
@@ -24,7 +23,7 @@ class Animal(PressurePlate, ABC):
         room = player.get_current_room()
         room.remove_from_grid(self, self.get_position())
 
-        return []
+        return [ChatMessage(StaticSender("UPDATE"), room, f"You rescued a {self.animal_name}!")]
     
 class Cow(Animal):
     def __init__(self):
