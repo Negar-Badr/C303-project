@@ -149,15 +149,6 @@ class ExampleHouse(Map):
             background_music='blithe', #todo
         )
 
-    # def _get_keybinds(self) -> dict[str, Callable[["HumanPlayer"], list["Message"]]]:
-    #     # Get the default movement commands
-    #     keybinds = super()._get_keybinds()
-
-    #     # Add custom commands (e.g. "j" for jump)
-    #     keybinds["j"] = lambda player: JumpCommand().execute(player)
-
-    #     return keybinds
-
     def _get_keybinds(self) -> dict[str, Callable[["HumanPlayer"], list["Message"]]]:
         keybinds = super()._get_keybinds()  # keep built-in ones if needed
 

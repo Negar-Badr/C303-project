@@ -13,12 +13,13 @@ class JumpCommand(Command):
     def execute(self, player: "HumanPlayer") -> list["Message"]:
         print("JumpCommand triggered")
 
-        direction = player.get_state("last_direction")
+        direction = player.get_facing_direction()
+        print("Last direction:", direction)
         if not direction:
             print("No last direction stored.")
             return []
 
-        dx, dy = {
+        dy, dx = {             # bcz they are flipped
             "up": (0, -1),
             "down": (0, 1),
             "left": (-1, 0),
@@ -26,27 +27,24 @@ class JumpCommand(Command):
         }[direction]
 
         current_pos = player.get_current_position()
-        print("Current position:", current_pos)
         room = player.get_current_room()
+        jumped_pose = current_pos + Coord(2 * dx, 2 * dy)
 
-        pos1 = current_pos + Coord(dx, dy)
-        pos2 = current_pos + Coord(2 * dx, 2 * dy)
+        # Check bounds
+        if not (1 <= jumped_pose.x < 14 and 1 <= jumped_pose.y < 14):
+            print(f"Jumped to invalid position {jumped_pose} (out of bounds)")
+            return []
 
-        print("Jumping to:", pos2)
-        #TODO NEED TO ADD THIS FUNCTIONALITY TO THE ROOM CLASS OR IMPLEMENT PASSABLE FROM MAP OBJECTS HERE
-        # print("Is pos1 passable?", room.is_passable(pos1))
-        # print("Is pos2 passable?", room.is_passable(pos2))
-        # # Ensure both positions are passable
-        # if not room.is_passable(pos1) or not room.is_passable(pos2):
-        #     print("Jump blocked: one or both tiles are impassable.")
+        # # Check passability
+        # target_obj = room.get_object(jumped_pose)
+        # if target_obj and not target_obj.is_passable():
+        #     print(f"Jumped to blocked tile at {jumped_pose} ({target_obj})")
         #     return []
     
-        # Manual repositioning
+        # Set the postions of the player
         room.remove_player(player)
-        player.set_position(pos2)  
-        room.add_player(player, pos2)
-        print("New player position:", player.get_current_position())
-
-        print(f"Jumped from {current_pos} to {pos2} in direction '{direction}'")
+        player.set_position(jumped_pose)  
+        room.add_player(player, jumped_pose)
+        print(f"Jumped from {current_pos} to {jumped_pose} in direction '{direction}'")
 
         return [GridMessage(player)]
