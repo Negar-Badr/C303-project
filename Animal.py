@@ -23,7 +23,7 @@ class Animal(PressurePlate, ABC):
         room = player.get_current_room()
         room.remove_from_grid(self, self.get_position())
 
-        return [ChatMessage(StaticSender("UPDATE"), room, f"You rescued a {self.animal_name}!")]
+        return [ChatMessage(StaticSender("UPDATE"), room, f"You rescued a {self.animal_name}! ({gsm.collected_animals}/{gsm.total_animals})")]
     
 class Cow(Animal):
     def __init__(self):
