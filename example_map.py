@@ -47,6 +47,7 @@ class Rock(PressurePlate):
         
     def player_entered(self, player) -> list[Message]:
         """Handles when the player steps on a Rock."""
+        if hasattr(player, "is_hunter"): return []
         game_state_manager = GameStateManager()  # Singleton instance
         game_state_manager.collect_item("rock")  # Notify game state
         room = player.get_current_room()
@@ -66,6 +67,7 @@ class Hunter(NPC):
         )
         self.game_over_triggered = False  # Flag to stop movement after game over
         self.movement_strategy = RandomMovement
+        self.is_hunter = True
     
     def _find_player(self):
         room = self.get_current_room()
