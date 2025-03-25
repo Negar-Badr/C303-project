@@ -42,9 +42,9 @@ class JumpCommand(Command):
         #     return []
     
         # Manual repositioning
-        room.remove_from_grid(player, current_pos)
-        player.set_position(pos2)  # or use: player._current_position = pos2 if no setter
-        room.place_on_grid(player, pos2)
+        room.remove_player(player)
+        player.set_position(pos2)  
+        room.add_player(player, pos2)
         print("New player position:", player.get_current_position())
 
         print(f"Jumped from {current_pos} to {pos2} in direction '{direction}'")
