@@ -5,6 +5,8 @@ import random
 from typing import Literal
 from .GameStateManager import GameStateManager
 from .MovementStrategy import RandomMovement
+from collections.abc import Callable
+from .commands import JumpCommand
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -249,6 +251,15 @@ class ExampleHouse(Map):
             background_tile_image='grass',
             background_music='blithe', #todo
         )
+
+    def _get_keybinds(self) -> dict[str, Callable[["HumanPlayer"], list["Message"]]]:
+        # Get the default movement commands
+        keybinds = super()._get_keybinds()
+
+        # Add custom commands (e.g. "j" for jump)
+        keybinds["j"] = lambda player: JumpCommand().execute(player)
+
+        return keybinds
         
     def add_player(self, player: "Player", entry_point=None) -> None:
         super().add_player(player, entry_point)
