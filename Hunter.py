@@ -39,7 +39,7 @@ class Hunter(NPC):
         """Update hunter's position using the current movement strategy from GameStateManager."""
         # Get the current movement strategy from the game state
         gsm = GameStateManager()
-        gsm.update_hunter_strategy()
+        #gsm.update_hunter_strategy()
         current_strategy = gsm.get_hunter_strategy()
         messages = []
         player = self._find_player()
@@ -47,7 +47,7 @@ class Hunter(NPC):
         self.movement_strategy = current_strategy
     
         direction_to_player = self.get_direction_toward(player.get_current_position())
-        messages += self.movement_strategy.move(self, direction_to_player)
+        messages += self.movement_strategy.move(self, direction_to_player, player)
             
         if gsm.is_game_over():
             print("GAME OVER! Player cannot move anymore.")
