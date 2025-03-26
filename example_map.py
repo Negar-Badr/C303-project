@@ -72,6 +72,9 @@ class ExampleHouse(Map):
             background_tile_image='grass',
             background_music='blithe', #todo
         )
+        self.message_queue = []  # Queue for storing messages to show
+        self.has_received_initial_dialogue = False  # Flag to ensure dialogue is shown only once
+
 
     def _get_keybinds(self) -> dict[str, Callable[["HumanPlayer"], list["Message"]]]:
         keybinds = super()._get_keybinds()  # keep built-in ones if needed
@@ -96,10 +99,31 @@ class ExampleHouse(Map):
     def add_player(self, player: "Player", entry_point=None) -> None:
         super().add_player(player, entry_point)
         self.player_instance = player
+        self.has_received_initial_dialogue = False
         print(f"Player {player.get_name()} has entered the map.")
         
+        # Send initial messages only once
+        if not self.has_received_initial_dialogue:
+            self.show_initial_dialogue(player)
+            self.has_received_initial_dialogue = True
+
+    def show_initial_dialogue(self, player):
+        # Queue initial messages to be shown when the player enters the map
+        print("HIIIIiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii")
+        self.message_queue.append(DialogueMessage(self, player, "Welcome to the Paw's Peril House!", player.get_image_name()))
+        self.message_queue.append(DialogueMessage(self, player, "Please help us save the animals before the hunter gets to you!", player.get_image_name()))
+        self.message_queue.append(DialogueMessage(self, player, "Stay clear of the poisonous rocks!", player.get_image_name()))
+        self.message_queue.append(DialogueMessage(self, player, "There are some magic flowers that contain the antidote!", player.get_image_name()))
+        self.message_queue.append(DialogueMessage(self, player, "You can jump over them by pressing 'j'", player.get_image_name()))
+
     def update(self) -> list[Message]:
         messages = []
+
+        if self.message_queue:
+            # Send the first message and remove it from the queue
+            next_message = self.message_queue.pop(0)
+            messages.append(next_message)
+
         objects = getattr(self, '_Map__objects', [])
         for obj in list(objects):  # iterate over a copy
             messages.extend(obj.update())
