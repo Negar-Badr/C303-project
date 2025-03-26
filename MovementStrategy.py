@@ -23,7 +23,7 @@ class RandomMovement(MovementStrategy):
 class ShortestPathMovement(MovementStrategy):
     def move(self, hunter, direction: str, player = None) -> list:
         # Use the given direction (computed via hunter.get_direction_toward)
-        print(f"ShortestPathMovement: moving towards {direction}!")
+        print(f"ShortestPathMovement: moving {direction}!")
         return hunter.base_move(direction)
     
     
@@ -32,13 +32,11 @@ class TeleportMovement(MovementStrategy):
         self.last_teleport_time = time.time()
 
     def move(self, hunter, direction, player=None) -> list:
-        print("WE'RE MOVING")
 
         room = hunter.get_current_room()
         now = time.time()
 
         if now - self.last_teleport_time >= 1:
-            print("TELEPORTING!!")
             self.last_teleport_time = now
 
             hunter_pos = hunter.get_current_position()
@@ -54,7 +52,6 @@ class TeleportMovement(MovementStrategy):
             #teleports 2 tiles away
             #teleport_target = Coord(player_pos.y - 2 * dy, player_pos.x - 2 * dx) 
             teleport_target = Coord(player_pos.y, player_pos.x)
-
             print(f"Teleporting to: {teleport_target}")
             
             status, err = room.remove_from_grid(hunter, hunter.get_current_position())
@@ -67,5 +64,4 @@ class TeleportMovement(MovementStrategy):
             return [GridMessage(player)]
         
         else:
-            print("NOT TIME YET")
             return hunter.base_move(direction)

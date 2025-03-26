@@ -39,7 +39,6 @@ class Hunter(NPC):
         """Update hunter's position using the current movement strategy from GameStateManager."""
         # Get the current movement strategy from the game state
         gsm = GameStateManager()
-        #gsm.update_hunter_strategy()
         current_strategy = gsm.get_hunter_strategy()
         messages = []
         player = self._find_player()
