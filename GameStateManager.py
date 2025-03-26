@@ -43,16 +43,20 @@ class GameStateManager:
         if not self.collected_items_ordered:
             self.hunter_strategy = RandomMovement()
             return
-        last_item = self.collected_items_ordered[-1]
-        if "rock" in last_item:
-            self.hunter_strategy = TeleportMovement()
-        elif "flower" in last_item:
-            self.hunter_strategy = ShortestPathMovement()
-        elif "animal" in last_item: 
-            self.hunter_strategy = ShortestPathMovement()
-
         else:
-            self.hunter_strategy = RandomMovement()
+            last_item = self.collected_items_ordered[-1]
+
+            if "rock" in last_item:
+                self.hunter_strategy = TeleportMovement()
+            elif "flower" in last_item:
+                if not any("animal" in item for item in self.collected_items_ordered):
+                    self.hunter_strategy = RandomMovement()
+                else:
+                    self.hunter_strategy = ShortestPathMovement()
+            elif "animal" in last_item:
+                self.hunter_strategy = ShortestPathMovement()
+            else:
+                self.hunter_strategy = RandomMovement()
 
         print(f"Hunter strategy updated to: {self.hunter_strategy.__class__.__name__}")
 
