@@ -14,17 +14,15 @@ class GameStateManager:
         """Initialize game state variables only once."""
         if not self._initialized:
             self.state = "playing"  # Possible states: "playing", "win", "lose"
-            self.collected_items = set()  # Stores collected items (e.g., rock, flower)
-            self.collected_items_ordered = [] 
+            self.collected_items = []  # Stores collected items (e.g., rock, flower)
             self.collected_animals = 0  # Count of collected animals
             self.total_animals = 12 # total animal to save
-            self.hunter_strategy = RandomMovement  # Strategy pattern for hunter movement
+            self.hunter_strategy = RandomMovement()  # Strategy pattern for hunter movement
             self._initialized = True  # Mark as true at first 
 
     def collect_item(self, item):
         """Update game state when the player collects an item."""
-        self.collected_items.add(item)
-        self.collected_items_ordered.append(item)
+        self.collected_items.append(item)
         print(f"Player collected: {item}")
         self.update_hunter_strategy() 
 
@@ -33,23 +31,23 @@ class GameStateManager:
         self.collected_animals += 1
         print(f"Player collected an animal: {animal_name} ({self.collected_animals}/{self.total_animals})")  
 
-        self.collected_items_ordered.append("animal")  
+        self.collected_items.append("animal")  
         self.update_hunter_strategy()  
 
         if self.collected_animals >= self.total_animals:
             self.set_game_state("win")  #  Win condition triggered!
 
     def update_hunter_strategy(self):
-        if not self.collected_items_ordered:
+        if not self.collected_items:
             self.hunter_strategy = RandomMovement()
             return
         else:
-            last_item = self.collected_items_ordered[-1]
+            last_item = self.collected_items[-1]
 
             if "rock" in last_item:
                 self.hunter_strategy = TeleportMovement()
             elif "flower" in last_item:
-                if not any("animal" in item for item in self.collected_items_ordered):
+                if not any("animal" in item for item in self.collected_items):
                     self.hunter_strategy = RandomMovement()
                 else:
                     self.hunter_strategy = ShortestPathMovement()
