@@ -131,7 +131,8 @@ class ExampleHouse(Map):
         entrydoor = Door('int_entrance', linked_room="Trottier Town")
         objects.append((entrydoor, Coord(14, 7)))
         # add a door(exit)
-        exitdoor = Door('int_entrance', linked_room="Trottier Town")
+        #TODO this actually needs to be trottier town as well but it doesnt work right now, look into it!
+        exitdoor = Door('int_entrance', linked_room="Test House") 
         objects.append((exitdoor, Coord(0, 4)))
 
         all_positions = [Coord(x, y).to_tuple() for x in range(15) for y in range(15)]
@@ -183,7 +184,7 @@ class ExampleHouse(Map):
         
         # add the npc
         hunter = Hunter( #todo
-            encounter_text="I will hunt you down",
+            encounter_text="I caught you!",
             staring_distance=1,
         )
         objects.append((hunter, Coord(3,8)))

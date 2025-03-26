@@ -47,7 +47,7 @@ class Hunter(NPC):
         self.movement_strategy = current_strategy
     
         direction_to_player = self.get_direction_toward(player.get_current_position())
-        #messages += self.movement_strategy.move(self, direction_to_player)
+        messages += self.movement_strategy.move(self, direction_to_player)
             
         if gsm.is_game_over():
             print("GAME OVER! Player cannot move anymore.")
