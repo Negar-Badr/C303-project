@@ -128,11 +128,11 @@ class ExampleHouse(Map):
         objects.remove((tree, Coord(0,5)))
 
         # add a door(entrance)
-        door = Door('int_entrance', linked_room="Trottier Town")
-        objects.append((door, Coord(14, 7)))
+        entrydoor = Door('int_entrance', linked_room="Trottier Town")
+        objects.append((entrydoor, Coord(14, 7)))
         # add a door(exit)
-        door = Door('int_entrance', linked_room="Paws in Peril House")
-        objects.append((door, Coord(0, 4)))
+        exitdoor = Door('int_entrance', linked_room="Trottier Town")
+        objects.append((exitdoor, Coord(0, 4)))
 
         all_positions = [Coord(x, y).to_tuple() for x in range(15) for y in range(15)]
         free_positions = set(all_positions) - reserved_positions
