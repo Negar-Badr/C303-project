@@ -20,7 +20,7 @@ class Hunter(NPC):
     def __init__(self, encounter_text: str, staring_distance: int = 0, facing_direction: Literal['up', 'down', 'left', 'right'] = 'down') -> None:
         super().__init__(
             name="Hunter",
-            image="prof",
+            image="hunter",
             encounter_text=encounter_text,
             facing_direction=facing_direction,
             staring_distance=staring_distance,
