@@ -15,6 +15,7 @@ class GameStateManager:
         if not self._initialized:
             self.state = "playing"  # Possible states: "playing", "win", "lose"
             self.collected_items = set()  # Stores collected items (e.g., rock, flower)
+            self.collected_items_ordered = [] 
             self.collected_animals = 0  # Count of collected animals
             self.total_animals = 12 # total animal to save
             self.hunter_strategy = RandomMovement  # Strategy pattern for hunter movement
@@ -23,22 +24,33 @@ class GameStateManager:
     def collect_item(self, item):
         """Update game state when the player collects an item."""
         self.collected_items.add(item)
+        self.collected_items_ordered.append(item)
         print(f"Player collected: {item}")
-        #self.update_hunter_strategy() 
+        self.update_hunter_strategy() 
 
     def collect_animal(self, animal_name):
         """Update game state when the player collects an animal."""
         self.collected_animals += 1
         print(f"Player collected an animal: {animal_name} ({self.collected_animals}/{self.total_animals})")  
 
-        # if self.collected_animals >= self.total_animals:
-        #    self.set_game_state("win")  #  Win condition triggered!
+        self.collected_items_ordered.append("animal")  
+        self.update_hunter_strategy()  
+
+        if self.collected_animals >= self.total_animals:
+            self.set_game_state("win")  #  Win condition triggered!
 
     def update_hunter_strategy(self):
-        if "rock" in self.collected_items:
+        if not self.collected_items_ordered:
+            self.hunter_strategy = RandomMovement()
+            return
+        last_item = self.collected_items_ordered[-1]
+        if "rock" in last_item:
             self.hunter_strategy = TeleportMovement()
-        elif "flower" in self.collected_items:
+        elif "flower" in last_item:
             self.hunter_strategy = ShortestPathMovement()
+        elif "animal" in last_item: 
+            self.hunter_strategy = ShortestPathMovement()
+
         else:
             self.hunter_strategy = RandomMovement()
 
