@@ -72,8 +72,6 @@ class ExampleHouse(Map):
             background_tile_image='grass',
             background_music='blithe', #todo
         )
-        self.message_queue = []  # Queue for storing messages to show
-        self.has_received_initial_dialogue = False  # Flag to ensure dialogue is shown only once
 
 
     def _get_keybinds(self) -> dict[str, Callable[["HumanPlayer"], list["Message"]]]:
@@ -102,27 +100,30 @@ class ExampleHouse(Map):
         self.has_received_initial_dialogue = False
         print(f"Player {player.get_name()} has entered the map.")
         
-        # Send initial messages only once
-        if not self.has_received_initial_dialogue:
-            self.show_initial_dialogue(player)
-            self.has_received_initial_dialogue = True
+        # Check if we've already shown the tutorial/welcome message to this player
+        if not player.get_state("has_seen_example_house_tutorial", False):
+            # Construct your helpful message
+            welcome_text = (
+                "Welcome to the House!\n"
+                "Use arrow keys or WASD to move around.\n"
+                "Press 'j' to jump over certain obstacles.\n"
+                "Try not to get caught by the hunter!\n"
+                "Collect items, but watch where you step!"
+            )
 
-    def show_initial_dialogue(self, player):
-        # Queue initial messages to be shown when the player enters the map
-        print("HIIIIiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii")
-        self.message_queue.append(DialogueMessage(self, player, "Welcome to the Paw's Peril House!", player.get_image_name()))
-        self.message_queue.append(DialogueMessage(self, player, "Please help us save the animals before the hunter gets to you!", player.get_image_name()))
-        self.message_queue.append(DialogueMessage(self, player, "Stay clear of the poisonous rocks!", player.get_image_name()))
-        self.message_queue.append(DialogueMessage(self, player, "There are some magic flowers that contain the antidote!", player.get_image_name()))
-        self.message_queue.append(DialogueMessage(self, player, "You can jump over them by pressing 'j'", player.get_image_name()))
+            # Send a DialogueMessage (which appears like a text box / pop-up)
+            DialogueMessage(
+                sender=StaticSender("Test House"),
+                recipient=player,
+                text=welcome_text,
+                image="tile/background/tree_heart",  
+            )
+            # Mark in the player’s state that they’ve seen this message
+            player.set_state("has_seen_example_house_tutorial", True)
+            
 
     def update(self) -> list[Message]:
         messages = []
-
-        if self.message_queue:
-            # Send the first message and remove it from the queue
-            next_message = self.message_queue.pop(0)
-            messages.append(next_message)
 
         objects = getattr(self, '_Map__objects', [])
         for obj in list(objects):  # iterate over a copy
