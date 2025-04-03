@@ -190,7 +190,7 @@ class ExampleHouse(Map):
         objects.append((hunter, Coord(3,8)))
 
         # add a pressure plate
-        # pressure_plate = ScorePressurePlate()
-        # objects.append((pressure_plate, Coord(13, 7)))
+        pressure_plate = ScorePressurePlate('grass')
+        objects.append((pressure_plate, Coord(13, 7)))
 
         return objects
