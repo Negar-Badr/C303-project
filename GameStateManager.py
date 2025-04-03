@@ -41,20 +41,19 @@ class GameStateManager:
         if not self.collected_items:
             self.hunter_strategy = RandomMovement()
             return
-        else:
-            last_item = self.collected_items[-1]
 
-            if "rock" in last_item:
-                self.hunter_strategy = TeleportMovement()
-            elif "flower" in last_item:
-                if not any("animal" in item for item in self.collected_items):
-                    self.hunter_strategy = RandomMovement()
-                else:
-                    self.hunter_strategy = ShortestPathMovement()
-            elif "animal" in last_item:
-                self.hunter_strategy = ShortestPathMovement()
-            else:
-                self.hunter_strategy = RandomMovement()
+        last_rock_index = max((i for i, item in enumerate(self.collected_items) if "rock" in item), default=-1)
+        last_flower_index = max((i for i, item in enumerate(self.collected_items) if "flower" in item), default=-1)
+        has_animal = any("animal" in item for item in self.collected_items)
+
+        if last_rock_index > last_flower_index: # it will always be teleport until the player picks up a flower
+            self.hunter_strategy = TeleportMovement()
+
+        elif has_animal: # at least once animal, then the hunter never goes back to shortest path
+            self.hunter_strategy = ShortestPathMovement()
+
+        elif last_flower_index != -1: # if doesnt have at least once animal, and we have a flower, hunter will be random 
+            self.hunter_strategy = RandomMovement()
 
         print(f"Hunter strategy updated to: {self.hunter_strategy.__class__.__name__}")
 
