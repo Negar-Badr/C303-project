@@ -127,6 +127,9 @@ class ExampleHouse(Map):
         objects.remove((tree, Coord(0,4)))
         objects.remove((tree, Coord(0,5)))
 
+        reserved_positions.add(Coord(13, 7).to_tuple())
+        reserved_positions.add(Coord(13, 8).to_tuple())
+
         # add a door(entrance)
         entrydoor = Door('int_entrance', linked_room="Trottier Town")
         objects.append((entrydoor, Coord(14, 7)))
@@ -134,11 +137,47 @@ class ExampleHouse(Map):
         #TODO this actually needs to be trottier town as well but it doesnt work right now, look into it!
         exitdoor = Door('int_entrance', linked_room="Test House") 
         objects.append((exitdoor, Coord(0, 4)))
+        
 
         all_positions = [Coord(x, y).to_tuple() for x in range(15) for y in range(15)]
         free_positions = set(all_positions) - reserved_positions
 
         # print(free_positions)
+
+        # Add tree clusters as obstacles
+        # Decide how many clusters to add (this can be fixed or random)
+        num_clusters = 17 
+        for _ in range(num_clusters):
+            # Randomly decide cluster size: 1 (single tree), 2, or 3
+            cluster_size = random.choice([1, 2, 3])
+            attempts = 0
+            placed = False
+            while attempts < 10 and not placed:
+                start = random.choice(list(free_positions))
+                cluster_coords = [start]
+                if cluster_size > 1:
+                    # Randomly choose an orientation: horizontal or vertical
+                    orientation = random.choice(['horizontal', 'vertical'])
+                    valid_cluster = True
+                    # Try to add the remaining tiles in the chosen orientation
+                    for i in range(1, cluster_size):
+                        if orientation == 'horizontal':
+                            next_coord = (start[0], start[1] + i)
+                        else:
+                            next_coord = (start[0] + i, start[1])
+                        if next_coord not in free_positions:
+                            valid_cluster = False
+                            break
+                        cluster_coords.append(next_coord)
+                    if not valid_cluster:
+                        attempts += 1
+                        continue
+                # If valid, add a Tree at each coordinate in the cluster
+                for pos in cluster_coords:
+                    objects.append((Tree(), Coord(pos[1], pos[0])))
+                    free_positions.remove(pos)
+                placed = True
+
 
         # add rocks
         for _ in range(5):
