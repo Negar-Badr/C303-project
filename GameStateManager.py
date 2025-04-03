@@ -34,9 +34,6 @@ class GameStateManager:
         self.collected_items.append("animal")  
         self.update_hunter_strategy()  
 
-        if self.collected_animals >= self.total_animals:
-            self.set_game_state("win")  #  Win condition triggered!
-
     def update_hunter_strategy(self):
         if not self.collected_items:
             self.hunter_strategy = RandomMovement()
@@ -78,4 +75,8 @@ class GameStateManager:
     def is_game_over(self):
         """Returns True if the game is over, preventing further movement."""
         return self.state == "lose"
+    
+    def is_win(self):
+        """Returns True if the player has reached the door after collecting all 12 animals."""
+        return self.state == "win"
 
