@@ -20,8 +20,16 @@ class Flower(PressurePlate, ABC):
         gsm = GameStateManager()
         gsm.collect_item("flower")
         
+        coord = self.get_position()
+        gsm.track_picked_item(self, coord)
+
         room = player.get_current_room()
         room.remove_from_grid(self, self.get_position()) 
+
+        if not hasattr(player, "inventory"):
+            player.inventory = []
+        player.inventory.append(self)
+
         
         return [ChatMessage(StaticSender("UPDATE"), room, f"You stepped on a {self.flower_name}! The hunter slows down...")]
     

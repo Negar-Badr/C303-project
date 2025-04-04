@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from .imports import *
+from .GameStateManager import GameStateManager
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from coord import Coord
@@ -48,3 +49,33 @@ class JumpCommand(Command):
         print(f"Jumped from {current_pos} to {jumped_pose} in direction '{direction}'")
 
         return [GridMessage(player)]
+
+
+class UndoCommand(Command):
+    def execute(self, player):
+        gsm = GameStateManager()
+
+        if gsm.tracked_picked_items:
+            _, item = gsm.tracked_picked_items.pop()
+
+            if hasattr(player, "inventory") and item in player.inventory:
+                player.inventory.remove(item)
+
+            drop_coord = player.get_current_position()
+            room = player.get_current_room()
+            room.add_to_grid(item, drop_coord)
+
+            gsm.undo_collect_item(item)
+
+            if "animal" in str(type(item)).lower():
+                msg = f"Dropped {type(item).__name__} at your current location. ({gsm.collected_animals}/{gsm.total_animals} animals rescued)"
+            else:
+                msg = f"Dropped {type(item).__name__} at your current location."
+
+            return [
+                ChatMessage(player, room, msg),
+                GridMessage(player, send_desc=False)
+            ]
+
+        return [ChatMessage(player, player.get_current_room(), "Nothing to undo.")]
+    
