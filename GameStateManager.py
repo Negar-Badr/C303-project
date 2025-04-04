@@ -19,12 +19,16 @@ class GameStateManager:
             self.total_animals = 12 # total animal to save
             self.hunter_strategy = RandomMovement()  # Strategy pattern for hunter movement
             self._initialized = True  # Mark as true at first 
+            self.tracked_picked_items = []  # for undo support
 
     def collect_item(self, item):
         """Update game state when the player collects an item."""
         self.collected_items.append(item)
         print(f"Player collected: {item}")
         self.update_hunter_strategy() 
+    
+    def track_picked_item(self, item, coord):
+        self.tracked_picked_items.append((coord, item))
 
     def collect_animal(self, animal_name):
         """Update game state when the player collects an animal."""
@@ -53,6 +57,27 @@ class GameStateManager:
             self.hunter_strategy = RandomMovement()
 
         print(f"Hunter strategy updated to: {self.hunter_strategy.__class__.__name__}")
+
+    def undo_collect_item(self, item):
+        item_type = None
+        if "rock" in str(type(item)).lower():
+            item_type = "rock"
+        elif "flower" in str(type(item)).lower():
+            item_type = "flower"
+        elif "animal" in str(type(item)).lower():
+            item_type = "animal"
+
+        # Remove the LAST matching item from collected_items (to preserve strategy logic)
+        for i in reversed(range(len(self.collected_items))):
+            if self.collected_items[i] == item_type:
+                del self.collected_items[i]
+                break
+
+        if item_type == "animal":
+            self.collected_animals = max(0, self.collected_animals - 1)
+
+        self.update_hunter_strategy()
+    
 
     def set_game_state(self, state):
         """Change the game state."""

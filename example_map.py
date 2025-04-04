@@ -9,7 +9,7 @@ from .Flower import Daisy, Orchid, Daffodil, Tulip
 from .MovementStrategy import RandomMovement
 from .commands import JumpCommand
 from collections.abc import Callable
-from .commands import JumpCommand
+from .commands import *
 from .Hunter import Hunter
 from .utils import StaticSender
 
@@ -56,9 +56,17 @@ class Rock(PressurePlate):
         game_state_manager = GameStateManager()  # Singleton instance
         game_state_manager.collect_item("rock")  # Notify game state
         
+        coord = self.get_position()
+        game_state_manager.track_picked_item(self, coord)
+
         room = player.get_current_room()
-        room.remove_from_grid(self, self.get_position())  
-        
+        room.remove_from_grid(self, self.get_position()) 
+
+        if not hasattr(player, "inventory"):
+            player.inventory = []
+        player.inventory.append(self)
+
+                
         return [ChatMessage(StaticSender("UPDATE"), room, f"You stepped on a rock! The hunter speeds up...")]
 
 # -------------------------------------- OUR HOUSE -----------------------------------------------------------------
@@ -85,6 +93,7 @@ class ExampleHouse(Map):
             "left": move_with_direction("left"),
             "right": move_with_direction("right"),
             "j": lambda player: JumpCommand().execute(player),  # jump still works
+            "z": lambda player: UndoCommand().execute(player),
         })
 
         return keybinds
