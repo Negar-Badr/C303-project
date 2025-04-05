@@ -50,7 +50,36 @@ class JumpCommand(Command):
         room.add_player(player, jumped_pose)
         print(f"Jumped from {current_pos} to {jumped_pose} in direction '{direction}'")
 
-        return [GridMessage(player)]
+        # return [GridMessage(player)]
+
+        messages = []
+        gsm = GameStateManager()
+        
+        # After landing, iterate over all objects at the landing tile
+        # and collect them if they are of a collectible type.
+        for obj in target_objs:
+            type_str = str(type(obj)).lower()
+            # For animals, call collect_animal with the animal's name.
+            if "animal" in type_str:
+                gsm.collect_animal(obj.animal_name)
+                room.remove_from_grid(obj, jumped_pose)
+                if not hasattr(player, "inventory"):
+                    player.inventory = []
+                player.inventory.append(obj)
+                print(f"Collected animal: {obj}")
+            # For flowers or rocks, use collect_item.
+            elif "flower" in type_str or "rock" in type_str:
+                gsm.collect_item(obj)
+                room.remove_from_grid(obj, jumped_pose)
+                if not hasattr(player, "inventory"):
+                    player.inventory = []
+                player.inventory.append(obj)
+                print(f"Collected item: {obj}")
+        
+        messages.append(GridMessage(player))
+        return messages
+    
+       
 
 
 class UndoCommand(Command):
