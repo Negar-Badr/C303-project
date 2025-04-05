@@ -42,9 +42,6 @@ class LockableDoor(Door):
     def __init__(self, image_name: str, linked_room: str = "", is_main_entrance=False, original_connected_room=None, original_entry_point=None) -> None:
         super().__init__(image_name, linked_room, is_main_entrance)
         self._locked = False  
-        # Store the original connection data for unlocking later
-        self._original_connected_room = original_connected_room  
-        self._original_entry_point = original_entry_point  
 
     def lock(self):
         self._locked = True
@@ -55,7 +52,7 @@ class LockableDoor(Door):
     def player_entered(self, player) -> list[Message]:
         if self._locked:
             print("Door is locked.")
-            return [ChatMessage(StaticSender("SYSTEM"), player, "The door is locked until all animals are rescued.")]
+            return [ChatMessage(StaticSender("SYSTEM"), player, "Uh oh... The door is locked until all animals are rescued [Evil Laugh]")]
         return super().player_entered(player)
 
 # -------------------------------------- BACKGROUND -----------------------------------------------------------------
