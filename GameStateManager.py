@@ -20,6 +20,7 @@ class GameStateManager:
             self.hunter_strategy = RandomMovement()  # Strategy pattern for hunter movement
             self._initialized = True  # Mark as true at first 
             self.tracked_picked_items = []  # for undo support
+            self.current_map = None
 
     def collect_item(self, item):
         """Update game state when the player collects an item."""
@@ -36,7 +37,13 @@ class GameStateManager:
         print(f"Player collected an animal: {animal_name} ({self.collected_animals}/{self.total_animals})")  
 
         self.collected_items.append("animal")  
-        self.update_hunter_strategy()  
+        self.update_hunter_strategy() 
+        
+        if self.collected_animals >= self.total_animals:
+         if self.current_map is not None and hasattr(self.current_map, "entrance_door"):
+             if self.current_map.entrance_door._locked:
+                 self.current_map.entrance_door.unlock()
+                 print("Door unlocked because win condition met.")
 
     def update_hunter_strategy(self):
         if not self.collected_items:

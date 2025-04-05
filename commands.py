@@ -79,3 +79,46 @@ class UndoCommand(Command):
 
         return [ChatMessage(player, player.get_current_room(), "Nothing to undo.")]
     
+    
+class ShowIntroCommand(Command):
+    """A command that displays the introduction pop-up and menu when triggered."""
+    def __init__(self, pressure_plate):
+        super().__init__()
+        self.__pressure_plate = pressure_plate 
+
+    def execute(self, player) -> list["Message"]:
+        player.set_current_menu(self.__pressure_plate)
+
+        messages = []
+
+        intro_text = (
+            "Welcome to Paws in Peril!\n"
+            "Save all animals and escape without getting caught by the hunter.\n"
+            "You can jump using j."
+        )
+        tips_text = (
+            "Steer clear of the rocks, and collect flowers to nullify their effect.\n"
+            "Good luck!"
+        )
+        messages.append(
+            DialogueMessage(
+                sender=self.__pressure_plate, 
+                recipient=player, 
+                text=intro_text, 
+                image="EmptyPlate",        
+                bg_color=(247, 190, 211),  
+                text_color=(0, 0, 0)       
+            )
+        )
+        messages.append(
+            DialogueMessage(
+                sender=self.__pressure_plate, 
+                recipient=player, 
+                text=tips_text, 
+                image="EmptyPlate",       
+                bg_color=(247, 190, 211),  
+                text_color=(0, 0, 0)       
+            )
+        )
+
+        return messages
