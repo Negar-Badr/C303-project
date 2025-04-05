@@ -19,24 +19,6 @@ if TYPE_CHECKING:
     from tiles.base import MapObject
     from tiles.map_objects import *
     
-class ScorePressurePlate(PressurePlate):
-    def __init__(self, image_name='pressure_plate'):
-        super().__init__(image_name)
-
-    def player_entered(self, player) -> list[Message]:
-        """ Prevents the player from interacting after game over. """
-        game_state_manager = GameStateManager()  # Singleton instance
-        
-        # If game is over, prevent movement or interaction
-        if game_state_manager.is_game_over():
-            print("GAME OVER! Player cannot interact anymore.")
-            return []  # Return an empty message list to block actions
-
-        messages = super().player_entered(player)
-
-        # Add score to player
-        player.set_state("score", player.get_state("score") + 1)
-        return messages
 # -------------------------------------- DOOR ----------------------------------------------------------------- 
 class LockableDoor(Door):
     def __init__(self, image_name: str, linked_room: str = "", is_main_entrance=False, original_connected_room=None, original_entry_point=None) -> None:
