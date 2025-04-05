@@ -54,27 +54,29 @@ class JumpCommand(Command):
 
         messages = []
         gsm = GameStateManager()
+        collectible_objects = []
         
         # After landing, iterate over all objects at the landing tile
         # and collect them if they are of a collectible type.
         for obj in target_objs:
             type_str = str(type(obj)).lower()
             # For animals, call collect_animal with the animal's name.
+            if "animal" in type_str or "flower" in type_str or "rock" in type_str:
+                collectible_objects.append(obj)
+
+        # Process each collectible object.
+        for obj in collectible_objects:
+            type_str = str(type(obj)).lower()
             if "animal" in type_str:
                 gsm.collect_animal(obj.animal_name)
-                room.remove_from_grid(obj, jumped_pose)
-                if not hasattr(player, "inventory"):
-                    player.inventory = []
-                player.inventory.append(obj)
-                print(f"Collected animal: {obj}")
-            # For flowers or rocks, use collect_item.
             elif "flower" in type_str or "rock" in type_str:
                 gsm.collect_item(obj)
-                room.remove_from_grid(obj, jumped_pose)
-                if not hasattr(player, "inventory"):
-                    player.inventory = []
-                player.inventory.append(obj)
-                print(f"Collected item: {obj}")
+
+            room.remove_from_grid(obj, jumped_pose)
+            if not hasattr(player, "inventory"):
+                player.inventory = []
+            player.inventory.append(obj)
+            print(f"Collected {obj}")
         
         messages.append(GridMessage(player))
         return messages
