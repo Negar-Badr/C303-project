@@ -68,7 +68,7 @@ class Hunter(NPC):
             self.game_over(player)
             return messages
            
-        if gsm.collected_animals >= gsm.total_animals and (player._current_position == Coord(0,4) or player._current_position == Coord(0,5)):
+        if gsm.collected_animals >= gsm.total_animals and (player._current_position == Coord(14,7) or player._current_position == Coord(14,8)):
             self.win(player)  #  Win condition triggered!
         
         return messages

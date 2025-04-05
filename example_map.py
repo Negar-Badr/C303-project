@@ -7,7 +7,6 @@ from .GameStateManager import GameStateManager
 from .Animal import Cow, Monkey, Owl, Rabbit
 from .Flower import Daisy, Orchid, Daffodil, Tulip
 from .MovementStrategy import RandomMovement
-from .commands import JumpCommand
 from collections.abc import Callable
 from .commands import *
 from .Hunter import Hunter
@@ -19,7 +18,6 @@ if TYPE_CHECKING:
     from maps.base import Map
     from tiles.base import MapObject
     from tiles.map_objects import *
-    from NPC import NPC
     
 class ScorePressurePlate(PressurePlate):
     def __init__(self, image_name='pressure_plate'):
@@ -39,6 +37,23 @@ class ScorePressurePlate(PressurePlate):
         # Add score to player
         player.set_state("score", player.get_state("score") + 1)
         return messages
+# -------------------------------------- DOOR ----------------------------------------------------------------- 
+class LockableDoor(Door):
+    def __init__(self, image_name: str, linked_room: str = "", is_main_entrance=False, original_connected_room=None, original_entry_point=None) -> None:
+        super().__init__(image_name, linked_room, is_main_entrance)
+        self._locked = False  
+
+    def lock(self):
+        self._locked = True
+
+    def unlock(self):
+        self._locked = False
+
+    def player_entered(self, player) -> list[Message]:
+        if self._locked:
+            print("Door is locked.")
+            return [ChatMessage(StaticSender("SYSTEM"), player, "Uh oh... The door is locked until all animals are rescued [Evil Laugh]")]
+        return super().player_entered(player)
 
 # -------------------------------------- BACKGROUND -----------------------------------------------------------------
 class Tree(MapObject): 
@@ -70,54 +85,15 @@ class Rock(PressurePlate):
         return [ChatMessage(StaticSender("UPDATE"), room, f"You stepped on a rock! The hunter speeds up...")]
     
 # ------------------------------------ GAME INSTRUCTIONS ---------------------------------------------------------------   
-class ShowIntroCommand(Command):
-    """A command that displays the introduction pop-up and menu when triggered."""
-    def __init__(self, pressure_plate):
-        super().__init__()
-        self.__pressure_plate = pressure_plate 
-
-    def execute(self, player) -> list["Message"]:
-        player.set_current_menu(self.__pressure_plate)
-
-        messages = []
-
-        intro_text = (
-            "Welcome to Paws in Peril!\n"
-            "Save all animals and escape without getting caught by the hunter.\n"
-            "You can jump using j."
-        )
-        tips_text = (
-            "Steer clear of the rocks, and collect flowers to nullify their effect.\n"
-            "Good luck!"
-        )
-        messages.append(
-            DialogueMessage(
-                sender=self.__pressure_plate, 
-                recipient=player, 
-                text=intro_text, 
-                image="EmptyPlate",        
-                bg_color=(247, 190, 211),  
-                text_color=(0, 0, 0)       
-            )
-        )
-        messages.append(
-            DialogueMessage(
-                sender=self.__pressure_plate, 
-                recipient=player, 
-                text=tips_text, 
-                image="EmptyPlate",       
-                bg_color=(247, 190, 211),  
-                text_color=(0, 0, 0)       
-            )
-        )
-
-        return messages
-
 class EntranceMenuPressurePlate(PressurePlate):
     def player_entered(self, player) -> list[Message]:
+        room = player.get_current_room()
+        if hasattr(room, "entrance_door"):
+            room.entrance_door.lock()
+            print("Entrance door locked due to pressure plate activation.")
+        room.remove_from_grid(self, self.get_position()) 
         command = ShowIntroCommand(self)
         return command.execute(player)
-
 
 # -------------------------------------- OUR HOUSE -----------------------------------------------------------------
 class ExampleHouse(Map):
@@ -156,6 +132,7 @@ class ExampleHouse(Map):
         super().add_player(player, entry_point)
         self.player_instance = player
         print(f"Player {player.get_name()} has entered the map.")
+        GameStateManager().current_map = self
         
     def update(self) -> list[Message]:
         messages = []
@@ -182,21 +159,19 @@ class ExampleHouse(Map):
         # Remove trees for the entrance
         objects.remove((tree, Coord(14,7)))
         objects.remove((tree, Coord(14,8)))
-        # Remove trees for the exit
-        objects.remove((tree, Coord(0,4)))
-        objects.remove((tree, Coord(0,5)))
 
         reserved_positions.add(Coord(13, 7).to_tuple())
         reserved_positions.add(Coord(13, 8).to_tuple())
 
-        # add a door(entrance)
-        entrydoor = Door('int_entrance', linked_room="Trottier Town")
-        objects.append((entrydoor, Coord(14, 7)))
-        # add a door(exit)
-        #TODO this actually needs to be trottier town as well but it doesnt work right now, look into it!
-        exitdoor = Door('int_entrance', linked_room="Test House") 
-        objects.append((exitdoor, Coord(0, 4)))
-        
+        door = LockableDoor(
+            'int_entrance',
+            linked_room="Trottier Town",
+            original_connected_room='int_entrance',  # or the actual map/room object if available
+            original_entry_point=Coord(14, 7)           # set this to the proper entry point
+        )
+        door.unlock()  # ensure the door starts unlocked
+        self.entrance_door = door  # store reference for later locking/unlocking
+        objects.append((door, Coord(14, 7)))
 
         all_positions = [Coord(x, y).to_tuple() for x in range(15) for y in range(15)]
         free_positions = set(all_positions) - reserved_positions
