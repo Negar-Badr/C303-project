@@ -68,6 +68,56 @@ class Rock(PressurePlate):
 
                 
         return [ChatMessage(StaticSender("UPDATE"), room, f"You stepped on a rock! The hunter speeds up...")]
+    
+# ------------------------------------ GAME INSTRUCTIONS ---------------------------------------------------------------   
+class ShowIntroCommand(Command):
+    """A command that displays the introduction pop-up and menu when triggered."""
+    def __init__(self, pressure_plate):
+        super().__init__()
+        self.__pressure_plate = pressure_plate 
+
+    def execute(self, player) -> list["Message"]:
+        player.set_current_menu(self.__pressure_plate)
+
+        messages = []
+
+        intro_text = (
+            "Welcome to Paws in Peril!\n"
+            "Save all animals and escape without getting caught by the hunter.\n"
+            "You can jump using j."
+        )
+        tips_text = (
+            "Steer clear of the rocks, and collect flowers to nullify their effect.\n"
+            "Good luck!"
+        )
+        messages.append(
+            DialogueMessage(
+                sender=self.__pressure_plate, 
+                recipient=player, 
+                text=intro_text, 
+                image="EmptyPlate",        
+                bg_color=(247, 190, 211),  
+                text_color=(0, 0, 0)       
+            )
+        )
+        messages.append(
+            DialogueMessage(
+                sender=self.__pressure_plate, 
+                recipient=player, 
+                text=tips_text, 
+                image="EmptyPlate",       
+                bg_color=(247, 190, 211),  
+                text_color=(0, 0, 0)       
+            )
+        )
+
+        return messages
+
+class EntranceMenuPressurePlate(PressurePlate):
+    def player_entered(self, player) -> list[Message]:
+        command = ShowIntroCommand(self)
+        return command.execute(player)
+
 
 # -------------------------------------- OUR HOUSE -----------------------------------------------------------------
 class ExampleHouse(Map):
@@ -238,7 +288,8 @@ class ExampleHouse(Map):
         objects.append((hunter, Coord(3,8)))
 
         # add a pressure plate
-        pressure_plate = ScorePressurePlate('grass')
-        objects.append((pressure_plate, Coord(13, 7)))
+        # Replace the previous pressure plate with the entrance menu pressure plate
+        entrance_plate = EntranceMenuPressurePlate('grass')
+        objects.append((entrance_plate, Coord(13, 7)))
 
         return objects
