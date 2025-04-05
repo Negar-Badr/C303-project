@@ -36,11 +36,13 @@ class JumpCommand(Command):
             print(f"Jumped to invalid position {jumped_pose} (out of bounds)")
             return []
 
-        # # Check passability
-        # target_obj = room.get_object(jumped_pose)
-        # if target_obj and not target_obj.is_passable():
-        #     print(f"Jumped to blocked tile at {jumped_pose} ({target_obj})")
-        #     return []
+        # Check passability
+        target_objs = room.get_map_objects_at(jumped_pose)
+        for obj in target_objs:
+            # If any object is not passable, don't jump.
+            if not obj.is_passable():
+                print(f"Jumped to blocked tile at {jumped_pose} ({obj})")
+                return []
     
         # Set the postions of the player
         room.remove_player(player)
