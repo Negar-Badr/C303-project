@@ -67,16 +67,28 @@ class JumpCommand(Command):
         # Process each collectible object.
         for obj in collectible_objects:
             type_str = str(type(obj)).lower()
+            
             if "animal" in type_str:
                 gsm.collect_animal(obj.animal_name)
-            elif "flower" in type_str or "rock" in type_str:
-                gsm.collect_item(obj)
-
-            room.remove_from_grid(obj, jumped_pose)
-            if not hasattr(player, "inventory"):
-                player.inventory = []
-            player.inventory.append(obj)
-            print(f"Collected {obj}")
+                room.remove_from_grid(obj, jumped_pose)
+                if not hasattr(player, "inventory"):
+                    player.inventory = []
+                player.inventory.append(obj)
+                print(f"Collected animal: {obj}")
+            elif "flower" in type_str:
+                gsm.collect_item("flower")
+                room.remove_from_grid(obj, jumped_pose)
+                if not hasattr(player, "inventory"):
+                    player.inventory = []
+                player.inventory.append(obj)
+                print(f"Collected flower: {obj}")
+            elif "rock" in type_str:
+                gsm.collect_item("rock")
+                room.remove_from_grid(obj, jumped_pose)
+                if not hasattr(player, "inventory"):
+                    player.inventory = []
+                player.inventory.append(obj)
+                print(f"Collected rock: {obj}")
         
         messages.append(GridMessage(player))
         return messages
