@@ -49,11 +49,9 @@ class Hunter(NPC):
         messages += self.movement_strategy.move(self, direction_to_player, player)
             
         if gsm.is_game_over():
-            print("GAME OVER! Player cannot move anymore.")
             return []  # Block all movement
         
         if gsm.is_win():
-            print("The player saved all the animals!")
             return [DialogueMessage(self, player, "CONGRATULATIONS, YOU WIN!", self.get_image_name())]
 
         # Get distance between Hunter and Player
@@ -65,11 +63,16 @@ class Hunter(NPC):
             messages.append(DialogueMessage(self, player, "GAME OVER! The hunter caught you.", self.get_image_name()))
 
             self.game_over_triggered = True  # Stop future movement
-            self.game_over(player)
+            gsm.set_game_state("lose")
+            room = player.get_current_room()
+            if room:
+                print(f"Removing player {player} from room after game over.")
+                room.remove_from_grid(player, player.get_current_position())  # Player stops moving
+                #TODO Player should be given an option here to restart or leave the game, and then the correct action would be taken
             return messages
            
         if gsm.collected_animals >= gsm.total_animals and (player._current_position == Coord(14,7) or player._current_position == Coord(14,8)):
-            self.win(player)  #  Win condition triggered!
+            gsm.set_game_state("win") #  Win condition triggered!
         
         return messages
     
@@ -85,24 +88,3 @@ class Hunter(NPC):
             return 'right' if dx > 0 else 'left'
         else:
             return 'down' if dy > 0 else 'up'
-
-    def game_over(self, player):
-        """ Handles game over logic when the hunter catches the player."""
-        gsm = GameStateManager()  # Singleton instance
-
-        # Set game over state
-        gsm.set_game_state("lose")
-
-        # Remove the player from the room to stop movement
-        room = player.get_current_room()
-        if room:
-            print(f"Removing player {player} from room after game over.")
-            room.remove_from_grid(player, player.get_current_position())  # Removes the player from the game
-
-        print("GAME OVER: The player has been caught by the hunter!")
-        
-    def win(self, player):
-        """ Handles win logic when player collects all animals and reaches the door."""
-        gsm = GameStateManager()
-        
-        gsm.set_game_state("win")
