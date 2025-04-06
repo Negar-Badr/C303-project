@@ -84,8 +84,7 @@ class ShortestPathMovement(MovementStrategy):
         delta_pos = (pos[0] - hunter_pos.y, pos[1] - hunter_pos.x)
         if delta_pos in direc_map_inverse:
             direction = direc_map_inverse[delta_pos]
-                
-        print(f"ShortestPathMovement: moving {direction}!")
+            
         return hunter.base_move(direction)
     
     
@@ -119,8 +118,6 @@ class TeleportMovement(MovementStrategy):
                 teleport_target = player_pos  # teleport ONTO player if one tile away (in case the player isnt moving)
             else:
                 teleport_target = Coord(player_pos.y - dy, player_pos.x - dx)  # 1 tile away
-
-            print(f"Teleporting to: {teleport_target}")
             
             status, err = room.remove_from_grid(hunter, hunter.get_current_position())
             if not status:
