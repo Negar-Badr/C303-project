@@ -160,8 +160,10 @@ class ExampleHouse(Map):
         objects.remove((tree, Coord(14,7)))
         objects.remove((tree, Coord(14,8)))
 
-        reserved_positions.add(Coord(13, 7).to_tuple())
-        reserved_positions.add(Coord(13, 8).to_tuple())
+         # Reserve a 3x3 area around the door (door is at (14,7))
+        door_zone = [(x, y) for y in range(12, 15) for x in range(6, 9)]
+        for pos in door_zone:
+            reserved_positions.add(pos)
 
         door = LockableDoor(
             'int_entrance',
