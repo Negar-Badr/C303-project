@@ -11,6 +11,7 @@ from collections.abc import Callable
 from .commands import *
 from .Hunter import Hunter
 from .utils import StaticSender
+from .Observer import Observer
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -21,7 +22,7 @@ if TYPE_CHECKING:
     
 # -------------------------------------- DOOR ----------------------------------------------------------------- 
 class LockableDoor(Door):
-    def __init__(self, image_name: str, linked_room: str = "", is_main_entrance=False, original_connected_room=None, original_entry_point=None) -> None:
+    def __init__(self, image_name: str, linked_room: str = "", is_main_entrance=False) -> None:
         super().__init__(image_name, linked_room, is_main_entrance)
         self._locked = False  
 
@@ -42,9 +43,13 @@ class Tree(MapObject):
         super().__init__(f"tile/background/{image_name}", passable=False)
 
 # -------------------------------------- ROCKS -----------------------------------------------------------------
-class Rock(PressurePlate):
+class Rock(PressurePlate, Observer):
     def __init__(self, image_name='rock'):
         super().__init__(image_name)
+    
+    #TODO 
+    def on_notify(self, subject, event):
+        pass
         
     def player_entered(self, player) -> list[Message]:
         """Handles when the player steps on a Rock."""
@@ -67,11 +72,15 @@ class Rock(PressurePlate):
     
 # ------------------------------------ GAME INSTRUCTIONS ---------------------------------------------------------------   
 class EntranceMenuPressurePlate(PressurePlate):
+    #step_count = 0
+    
     def player_entered(self, player) -> list[Message]:
         room = player.get_current_room()
         if hasattr(room, "entrance_door"):
             room.entrance_door.lock()
         room.remove_from_grid(self, self.get_position()) 
+        # if self.step_count == 0:
+        #     self.step_count += 1
         command = ShowIntroCommand(self)
         return command.execute(player)
 
@@ -148,8 +157,8 @@ class ExampleHouse(Map):
         door = LockableDoor(
             'int_entrance',
             linked_room="Trottier Town",
-            original_connected_room='int_entrance',  # or the actual map/room object if available
-            original_entry_point=Coord(14, 7)           # set this to the proper entry point
+            # original_connected_room='int_entrance',  # or the actual map/room object if available
+            # original_entry_point=Coord(14, 7)           # set this to the proper entry point
         )
         door.unlock()  # ensure the door starts unlocked
         self.entrance_door = door  # store reference for later locking/unlocking
@@ -241,6 +250,9 @@ class ExampleHouse(Map):
             staring_distance=1,
         )
         objects.append((hunter, Coord(3,8)))
+        
+        gsm = GameStateManager()
+        gsm.add_observer(hunter)
 
         # add a pressure plate
         # Replace the previous pressure plate with the entrance menu pressure plate

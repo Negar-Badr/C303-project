@@ -2,6 +2,7 @@ from .imports import *
 from .GameStateManager import GameStateManager
 from abc import ABC
 from .utils import StaticSender
+from .Observer import Observer
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -10,10 +11,14 @@ if TYPE_CHECKING:
     from tiles.base import MapObject
     from tiles.map_objects import *
 
-class Animal(PressurePlate, ABC):
+class Animal(PressurePlate, Observer, ABC):
     def __init__(self, animal_name: str, image_name: str):
         super().__init__(f'animals/{image_name}')
         self.animal_name = animal_name
+
+    #TODO
+    def on_notify(self, subject, event):
+        pass
 
     def player_entered(self, player) -> list[Message]:
         if hasattr(player, "is_hunter"): return []
