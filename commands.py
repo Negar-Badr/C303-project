@@ -12,12 +12,8 @@ class Command(ABC):
 
 class JumpCommand(Command):
     def execute(self, player: "HumanPlayer") -> list["Message"]:
-        print("JumpCommand triggered")
-
         direction = player.get_facing_direction()
-        print("Last direction:", direction)
         if not direction:
-            print("No last direction stored.")
             return []
 
         dy, dx = {             # bcz they are flipped
@@ -33,7 +29,6 @@ class JumpCommand(Command):
 
         # Check bounds
         if not (1 <= jumped_pose.x < 14 and 1 <= jumped_pose.y < 14):
-            print(f"Jumped to invalid position {jumped_pose} (out of bounds)")
             return []
 
         # Check passability
@@ -41,55 +36,22 @@ class JumpCommand(Command):
         for obj in target_objs:
             # If any object is not passable, don't jump.
             if not obj.is_passable():
-                print(f"Jumped to blocked tile at {jumped_pose} ({obj})")
                 return []
     
         # Set the postions of the player
         room.remove_player(player)
         player.set_position(jumped_pose)  
         room.add_player(player, jumped_pose)
-        print(f"Jumped from {current_pos} to {jumped_pose} in direction '{direction}'")
-
-        # return [GridMessage(player)]
 
         messages = []
-        gsm = GameStateManager()
-        collectible_objects = []
-        
-        # After landing, iterate over all objects at the landing tile
-        # and collect them if they are of a collectible type.
-        for obj in target_objs:
-            type_str = str(type(obj)).lower()
-            # For animals, call collect_animal with the animal's name.
-            if "animal" in type_str or "flower" in type_str or "rock" in type_str:
-                collectible_objects.append(obj)
 
-        # Process each collectible object.
-        for obj in collectible_objects:
-            type_str = str(type(obj)).lower()
-            
-            if "animal" in type_str:
-                gsm.collect_animal(obj.animal_name)
-                room.remove_from_grid(obj, jumped_pose)
-                if not hasattr(player, "inventory"):
-                    player.inventory = []
-                player.inventory.append(obj)
-                print(f"Collected animal: {obj}")
-            elif "flower" in type_str:
-                gsm.collect_item("flower")
-                room.remove_from_grid(obj, jumped_pose)
-                if not hasattr(player, "inventory"):
-                    player.inventory = []
-                player.inventory.append(obj)
-                print(f"Collected flower: {obj}")
-            elif "rock" in type_str:
-                gsm.collect_item("rock")
-                room.remove_from_grid(obj, jumped_pose)
-                if not hasattr(player, "inventory"):
-                    player.inventory = []
-                player.inventory.append(obj)
-                print(f"Collected rock: {obj}")
+        # Iterate over objects on the tile and trigger pressure plates
+        # this is bcz undo command lets object stack on top of each other
+        for obj in room.get_map_objects_at(jumped_pose):
+            if isinstance(obj, PressurePlate):
+                messages.extend(obj.player_entered(player))
         
+        # update the grid after the move.
         messages.append(GridMessage(player))
         return messages
     
