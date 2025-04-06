@@ -19,24 +19,6 @@ if TYPE_CHECKING:
     from tiles.base import MapObject
     from tiles.map_objects import *
     
-class ScorePressurePlate(PressurePlate):
-    def __init__(self, image_name='pressure_plate'):
-        super().__init__(image_name)
-
-    def player_entered(self, player) -> list[Message]:
-        """ Prevents the player from interacting after game over. """
-        game_state_manager = GameStateManager()  # Singleton instance
-        
-        # If game is over, prevent movement or interaction
-        if game_state_manager.is_game_over():
-            print("GAME OVER! Player cannot interact anymore.")
-            return []  # Return an empty message list to block actions
-
-        messages = super().player_entered(player)
-
-        # Add score to player
-        player.set_state("score", player.get_state("score") + 1)
-        return messages
 # -------------------------------------- DOOR ----------------------------------------------------------------- 
 class LockableDoor(Door):
     def __init__(self, image_name: str, linked_room: str = "", is_main_entrance=False, original_connected_room=None, original_entry_point=None) -> None:
@@ -51,7 +33,6 @@ class LockableDoor(Door):
 
     def player_entered(self, player) -> list[Message]:
         if self._locked:
-            print("Door is locked.")
             return [ChatMessage(StaticSender("SYSTEM"), player, "Uh oh... The door is locked until all animals are rescued [Evil Laugh]")]
         return super().player_entered(player)
 
@@ -90,7 +71,6 @@ class EntranceMenuPressurePlate(PressurePlate):
         room = player.get_current_room()
         if hasattr(room, "entrance_door"):
             room.entrance_door.lock()
-            print("Entrance door locked due to pressure plate activation.")
         room.remove_from_grid(self, self.get_position()) 
         command = ShowIntroCommand(self)
         return command.execute(player)
@@ -177,8 +157,6 @@ class ExampleHouse(Map):
 
         all_positions = [Coord(x, y).to_tuple() for x in range(15) for y in range(15)]
         free_positions = set(all_positions) - reserved_positions
-
-        # print(free_positions)
 
         # Add tree clusters as obstacles
         # Decide how many clusters to add (this can be fixed or random)
