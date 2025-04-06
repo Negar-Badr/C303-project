@@ -12,12 +12,8 @@ class Command(ABC):
 
 class JumpCommand(Command):
     def execute(self, player: "HumanPlayer") -> list["Message"]:
-        print("JumpCommand triggered")
-
         direction = player.get_facing_direction()
-        print("Last direction:", direction)
         if not direction:
-            print("No last direction stored.")
             return []
 
         dy, dx = {             # bcz they are flipped
@@ -33,7 +29,6 @@ class JumpCommand(Command):
 
         # Check bounds
         if not (1 <= jumped_pose.x < 14 and 1 <= jumped_pose.y < 14):
-            print(f"Jumped to invalid position {jumped_pose} (out of bounds)")
             return []
 
         # Check passability
@@ -41,16 +36,26 @@ class JumpCommand(Command):
         for obj in target_objs:
             # If any object is not passable, don't jump.
             if not obj.is_passable():
-                print(f"Jumped to blocked tile at {jumped_pose} ({obj})")
                 return []
     
         # Set the postions of the player
         room.remove_player(player)
         player.set_position(jumped_pose)  
         room.add_player(player, jumped_pose)
-        print(f"Jumped from {current_pos} to {jumped_pose} in direction '{direction}'")
 
-        return [GridMessage(player)]
+        messages = []
+
+        # Iterate over objects on the tile and trigger pressure plates
+        # this is bcz undo command lets object stack on top of each other
+        for obj in room.get_map_objects_at(jumped_pose):
+            if isinstance(obj, PressurePlate):
+                messages.extend(obj.player_entered(player))
+        
+        # update the grid after the move.
+        messages.append(GridMessage(player))
+        return messages
+    
+       
 
 
 class UndoCommand(Command):
