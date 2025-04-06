@@ -34,7 +34,8 @@ class GameStateManager:
     def collect_animal(self, animal_name):
         """Update game state when the player collects an animal."""
         self.collected_animals += 1
-        print(f"Player collected an animal: {animal_name} ({self.collected_animals}/{self.total_animals})")  
+        print(f"Player collected an animal: {animal_name} ({self.collected_animals}/{self.total_animals})") 
+        
 
         self.collected_items.append("animal")  
         self.update_hunter_strategy() 
