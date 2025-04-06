@@ -33,7 +33,6 @@ class LockableDoor(Door):
 
     def player_entered(self, player) -> list[Message]:
         if self._locked:
-            print("Door is locked.")
             return [ChatMessage(StaticSender("SYSTEM"), player, "Uh oh... The door is locked until all animals are rescued [Evil Laugh]")]
         return super().player_entered(player)
 
@@ -72,7 +71,6 @@ class EntranceMenuPressurePlate(PressurePlate):
         room = player.get_current_room()
         if hasattr(room, "entrance_door"):
             room.entrance_door.lock()
-            print("Entrance door locked due to pressure plate activation.")
         room.remove_from_grid(self, self.get_position()) 
         command = ShowIntroCommand(self)
         return command.execute(player)
@@ -157,8 +155,6 @@ class ExampleHouse(Map):
 
         all_positions = [Coord(x, y).to_tuple() for x in range(15) for y in range(15)]
         free_positions = set(all_positions) - reserved_positions
-
-        # print(free_positions)
 
         # Add tree clusters as obstacles
         # Decide how many clusters to add (this can be fixed or random)

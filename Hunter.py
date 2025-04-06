@@ -66,7 +66,6 @@ class Hunter(NPC):
             gsm.set_game_state("lose")
             room = player.get_current_room()
             if room:
-                print(f"Removing player {player} from room after game over.")
                 room.remove_from_grid(player, player.get_current_position())  # Player stops moving
                 #TODO Player should be given an option here to restart or leave the game, and then the correct action would be taken
             return messages

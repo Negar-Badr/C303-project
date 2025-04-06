@@ -25,7 +25,6 @@ class GameStateManager:
     def collect_item(self, item):
         """Update game state when the player collects an item."""
         self.collected_items.append(item)
-        print(f"Player collected: {item}")
         self.update_hunter_strategy() 
     
     def track_picked_item(self, item, coord):
@@ -34,9 +33,6 @@ class GameStateManager:
     def collect_animal(self, animal_name):
         """Update game state when the player collects an animal."""
         self.collected_animals += 1
-        print(f"Player collected an animal: {animal_name} ({self.collected_animals}/{self.total_animals})") 
-        
-
         self.collected_items.append("animal")  
         self.update_hunter_strategy() 
         
@@ -44,7 +40,6 @@ class GameStateManager:
          if self.current_map is not None and hasattr(self.current_map, "entrance_door"):
              if self.current_map.entrance_door._locked:
                  self.current_map.entrance_door.unlock()
-                 print("Door unlocked because win condition met.")
 
     def update_hunter_strategy(self):
         if not self.collected_items:
@@ -63,8 +58,6 @@ class GameStateManager:
 
         elif last_flower_index != -1: # if doesnt have at least once animal, and we have a flower, hunter will be random 
             self.hunter_strategy = RandomMovement()
-
-        print(f"Hunter strategy updated to: {self.hunter_strategy.__class__.__name__}")
 
     def undo_collect_item(self, item):
         item_type = None
@@ -91,7 +84,6 @@ class GameStateManager:
         """Change the game state."""
         if state in ["playing", "win", "lose"]:
             self.state = state
-            print(f"Game state changed to: {self.state}")
 
     def get_state(self):
         """Retrieve the current game state."""

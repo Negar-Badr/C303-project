@@ -16,14 +16,12 @@ class MovementStrategy(ABC):
 class RandomMovement(MovementStrategy):
     def move(self, hunter, direction = None, player = None) -> list["Message"]:
         random_direction = random.choice(['up', 'down', 'left', 'right'])
-        print(f"RandomMovement: moving {random_direction}")
         return hunter.base_move(random_direction)
 
 
 class ShortestPathMovement(MovementStrategy):
     def move(self, hunter, direction: str, player = None) -> list:
         # Use the given direction (computed via hunter.get_direction_toward)
-        print(f"ShortestPathMovement: moving {direction}!")
         return hunter.base_move(direction)
     
     
@@ -52,11 +50,9 @@ class TeleportMovement(MovementStrategy):
             #teleports 2 tiles away
             #teleport_target = Coord(player_pos.y - 2 * dy, player_pos.x - 2 * dx) 
             teleport_target = Coord(player_pos.y, player_pos.x)
-            print(f"Teleporting to: {teleport_target}")
             
             status, err = room.remove_from_grid(hunter, hunter.get_current_position())
             if not status:
-                print("Failed to remove hunter from grid:", err)
                 return []
             room.add_to_grid(hunter, teleport_target)
             hunter.update_position(teleport_target, room)
