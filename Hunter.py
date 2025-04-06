@@ -59,7 +59,7 @@ class Hunter(NPC):
         # Get distance between Hunter and Player
         dist = self._current_position.distance(player.get_current_position())
 
-        if dist == 1:
+        if -2 <= dist <= 1.5:
             # Hunter is 1 tile away → Trigger Game Over
             messages.append(EmoteMessage(self, player, 'exclamation', emote_pos=self._current_position))
             messages.append(DialogueMessage(self, player, "GAME OVER! The hunter caught you.", self.get_image_name()))
