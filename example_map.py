@@ -162,16 +162,6 @@ class ExampleHouse(Map):
         for pos in door_zone:
             reserved_positions.add(pos)
 
-        # --- Add the Entrance Door ---
-        door = LockableDoor(
-            'int_entrance',
-            linked_room="Trottier Town",
-            is_main_entrance=True
-        )
-        door.unlock()  # ensure the door starts unlocked
-        self.entrance_door = door  # store reference for later locking/unlocking
-        objects.append((door, Coord(14, 7)))
-
         # Remove trees that conflict with the future entrance door
         objects.remove((tree, Coord(14, 7)))
         objects.remove((tree, Coord(14, 8)))
@@ -247,6 +237,16 @@ class ExampleHouse(Map):
         )
         objects.append((hunter, Coord(3,8)))
 
+        # --- Add the Entrance Door ---
+        door = LockableDoor(
+            'int_entrance',
+            linked_room="Trottier Town",
+            is_main_entrance=True
+        )
+        door.unlock()  # ensure the door starts unlocked
+        self.entrance_door = door  # store reference for later locking/unlocking
+        objects.append((door, Coord(14, 7)))
+
         # Optionally store the original state of objects
         GameStateManager().store_original_objects(objects)
         if not hasattr(self, "_original_objects"):
@@ -259,32 +259,6 @@ class ExampleHouse(Map):
                 gsm.add_observer(obj)
 
         return objects
-
-    # def reset_objects(self):
-    #     gsm = GameStateManager()
-
-    #     # Step 1: Only remove objects that aren't Player or Hunter (we keep the original Hunter alive)
-    #     for obj in list(getattr(self, '_Map__objects', set())):
-    #         if not isinstance(obj, (Player, Hunter)):
-    #             self.remove_from_grid(obj, obj.get_position())
-
-    #     # Step 2: Deepcopy all _original_objects EXCEPT Hunter
-    #     self._active_objects = []
-    #     for obj, coord in self._original_objects:
-    #         if isinstance(obj, Hunter):
-    #             continue  # Don't deepcopy or re-add hunter
-
-    #         new_obj = copy.deepcopy(obj)
-    #         new_obj.set_position(coord)
-    #         new_obj._current_room = self
-    #         self.add_to_grid(new_obj, coord)
-    #         self._active_objects.append((new_obj, coord))
-
-    #     # Step 3: Find the real Hunter and update its strategy
-    #     for obj in getattr(self, '_Map__objects', set()):
-    #         if isinstance(obj, Hunter):
-    #             obj.movement_strategy = gsm.get_hunter_strategy()
-    #             print("🐾 Hunter strategy reset to", type(obj.movement_strategy).__name__)
 
     def reset_objects(self):
         gsm = GameStateManager()
@@ -310,3 +284,15 @@ class ExampleHouse(Map):
             if isinstance(obj, Hunter):
                 obj.movement_strategy = RandomMovement()
                 print("🐾 Hunter strategy reset to", type(obj.movement_strategy).__name__)
+
+        # --- Add the Entrance Door ---
+        door = LockableDoor(
+            'int_entrance',
+            linked_room="Trottier Town",
+            is_main_entrance=True
+        )
+        door.unlock()  # ensure the door starts unlocked
+        self.entrance_door = door  # store reference for later locking/unlocking
+        self.add_to_grid(door, Coord(14, 7))
+        gsm.add_observer(door)  # Add the door as an observer
+
