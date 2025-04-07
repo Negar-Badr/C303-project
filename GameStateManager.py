@@ -1,6 +1,7 @@
 from .imports import *
 from .Subject import Subject
 from .Observer import Observer
+import copy
 
 class GameStateManager(Subject):
     _instance = None  
@@ -22,7 +23,24 @@ class GameStateManager(Subject):
             self._initialized = True  # Mark as true at first 
             self.tracked_picked_items = []  # for undo support
             self.current_map = None
-            self._observers = [] # for the observer pattern
+            self._original_objects = []  # NEW: original layout
+    
+    def store_original_objects(self, objects):
+        self._original_objects = [(copy.deepcopy(obj), coord) for obj, coord in objects]
+
+    def get_original_objects(self):
+        return self._original_objects
+
+    def reset_game_state(self):
+        self.state = "playing"
+        self.collected_items.clear()
+        self.collected_animals = 0
+        self.tracked_picked_items.clear()
+        self.hunter_strategy = RandomMovement()
+
+    def get_hunter_strategy(self):
+        return self.hunter_strategy 
+                self._observers = [] # for the observer pattern
             
     def add_observer(self, observer: Observer):
         self._observers.append(observer)

@@ -4,9 +4,9 @@ import math
 import random
 from typing import Literal
 from .GameStateManager import GameStateManager
-from .MovementStrategy import *
-from PIL import Image, ImageTk
-import tkinter as tk
+from .MovementStrategy import RandomMovement
+# from PIL import Image, ImageTk
+# import tkinter as tk
 from abc import ABC
 from .Observer import Observer
 
@@ -124,7 +124,7 @@ class Hunter(NPC, Observer):
             
             self.game_over_triggered = True  # Stop future movement
             gsm.set_game_state("lose")
-            # room = player.get_current_room()
+            room = player.get_current_room()
             # if room:
             #     room.remove_from_grid(player, player.get_current_position())  # Player stops moving
             #     #TODO Player should be given an option here to restart or leave the game, and then the correct action would be taken
