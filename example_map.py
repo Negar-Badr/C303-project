@@ -127,13 +127,17 @@ class ExampleHouse(Map):
             messages.extend(obj.update())
         return messages
     
-    def get_objects(self) -> list[tuple[MapObject, Coord]]:
+    def generate_items(self) -> list[tuple[MapObject, Coord]]:
+        """
+        Generates trees, rocks, flowers, and animals (including the NPC hunter)
+        and returns them as a list of (MapObject, Coord) tuples.
+        """
         objects: list[tuple[MapObject, Coord]] = []
 
-        # Crearte a list of reserved positions to avoid overlapping objects
+        # Create a set to reserve positions and avoid overlaps
         reserved_positions = set()
 
-        #adding trees
+        # --- Add Trees along the edges ---
         tree = Tree() 
         for i in range(14):
             for pos in [Coord(0, i), Coord(14, i), Coord(i, 0), Coord(i, 14)]:
@@ -142,15 +146,12 @@ class ExampleHouse(Map):
         objects.append((tree, Coord(14, 14)))
         reserved_positions.add(Coord(14, 14).to_tuple())
 
-        # Remove trees for the entrance
-        objects.remove((tree, Coord(14,7)))
-        objects.remove((tree, Coord(14,8)))
-
-         # Reserve a 3x3 area around the door (door is at (14,7))
+        # Reserve a 3x3 area around the door (door is at (14,7))
         door_zone = [(x, y) for y in range(12, 15) for x in range(6, 9)]
         for pos in door_zone:
             reserved_positions.add(pos)
 
+        # --- Add the Entrance Door ---
         door = LockableDoor(
             'int_entrance',
             linked_room="Trottier Town",
@@ -160,124 +161,134 @@ class ExampleHouse(Map):
         self.entrance_door = door  # store reference for later locking/unlocking
         objects.append((door, Coord(14, 7)))
 
+        # Remove trees that conflict with the future entrance door
+        objects.remove((tree, Coord(14, 7)))
+        objects.remove((tree, Coord(14, 8)))
+
+        # Determine all possible positions on the map (15x15 grid) and then calculate free positions
         all_positions = [Coord(x, y).to_tuple() for x in range(15) for y in range(15)]
         free_positions = set(all_positions) - reserved_positions
 
-        # Add tree clusters as obstacles
-        # Decide how many clusters to add (this can be fixed or random)
-        num_clusters = 17 
-        for _ in range(num_clusters):
-            # Randomly decide cluster size: 1 (single tree), 2, or 3
-            cluster_size = random.choice([1, 2, 3])
-            attempts = 0
-            placed = False
-            while attempts < 10 and not placed:
-                start = random.choice(list(free_positions))
-                cluster_coords = [start]
-                if cluster_size > 1:
-                    # Randomly choose an orientation: horizontal or vertical
-                    orientation = random.choice(['horizontal', 'vertical'])
-                    valid_cluster = True
-                    # Try to add the remaining tiles in the chosen orientation
-                    for i in range(1, cluster_size):
-                        if orientation == 'horizontal':
-                            next_coord = (start[0], start[1] + i)
-                        else:
-                            next_coord = (start[0] + i, start[1])
-                        if next_coord not in free_positions:
-                            valid_cluster = False
-                            break
-                        cluster_coords.append(next_coord)
-                    if not valid_cluster:
-                        attempts += 1
-                        continue
-                # If valid, add a Tree at each coordinate in the cluster
-                for pos in cluster_coords:
-                    objects.append((Tree(), Coord(pos[1], pos[0])))
-                    free_positions.remove(pos)
-                placed = True
+        # --- Add additional trees randomly ---
+        for _ in range(50):
+            new_tree = Tree()
+            pos = random.choice(list(free_positions))
+            objects.append((new_tree, Coord(pos[1], pos[0])))
+            free_positions.remove(pos)
 
-
-        # add rocks
+        # --- Add Rocks ---
         for _ in range(5):
             rock = Rock()
             pos = random.choice(list(free_positions))
             objects.append((rock, Coord(pos[1], pos[0])))
             free_positions.remove(pos)
         
-        # add flowers
+        # --- Add Flowers ---
         for _ in range(5):
             flower = random.choice([Daisy(), Orchid(), Daffodil(), Tulip()])
             pos = random.choice(list(free_positions))
             objects.append((flower, Coord(pos[1], pos[0])))
             free_positions.remove(pos)
 
-        # add cows
+        # --- Add Animals ---
+        # Add cows
         for _ in range(3):
             cow = Cow()
             pos = random.choice(list(free_positions))
             objects.append((cow, Coord(pos[1], pos[0])))
             free_positions.remove(pos)
-
-        # add monkeys
+        # Add monkeys
         for _ in range(3):
             monkey = Monkey()
             pos = random.choice(list(free_positions))
             objects.append((monkey, Coord(pos[1], pos[0])))
             free_positions.remove(pos)
-        
-        # add owls
+        # Add owls
         for _ in range(3):
             owl = Owl()
             pos = random.choice(list(free_positions))
             objects.append((owl, Coord(pos[1], pos[0])))
             free_positions.remove(pos)
-
-        # add rabbits
+        # Add rabbits
         for _ in range(3):
             rabbit = Rabbit()
             pos = random.choice(list(free_positions))
             objects.append((rabbit, Coord(pos[1], pos[0])))
             free_positions.remove(pos)
-        
-        # add the npc
+
+        # --- Add the Welcome Pressure Plate ---
+        entrance_plate = EntranceMenuPressurePlate('grass')
+        objects.append((entrance_plate, Coord(13, 7)))
+
+        return objects
+
+    def get_objects(self) -> list[tuple[MapObject, Coord]]:
+        """
+        Retrieves all map objects by generating the common items (trees, animals, rocks, flowers)
+        and then adding the entrance door and welcome pressure plate.
+        """
+        objects = self.generate_items()
+
+        # --- Add the NPC Hunter ---
         hunter = Hunter( #todo
             encounter_text="I caught you!",
             staring_distance=1,
         )
         objects.append((hunter, Coord(3,8)))
 
-        # add a pressure plate
-        # Replace the previous pressure plate with the entrance menu pressure plate
-        entrance_plate = EntranceMenuPressurePlate('grass')
-        objects.append((entrance_plate, Coord(13, 7)))
+        # Optionally store the original state of objects
         GameStateManager().store_original_objects(objects)
         if not hasattr(self, "_original_objects"):
             self._original_objects = copy.deepcopy(objects)
 
         return objects
-    
+
+    # def reset_objects(self):
+    #     gsm = GameStateManager()
+
+    #     # Step 1: Only remove objects that aren't Player or Hunter (we keep the original Hunter alive)
+    #     for obj in list(getattr(self, '_Map__objects', set())):
+    #         if not isinstance(obj, (Player, Hunter)):
+    #             self.remove_from_grid(obj, obj.get_position())
+
+    #     # Step 2: Deepcopy all _original_objects EXCEPT Hunter
+    #     self._active_objects = []
+    #     for obj, coord in self._original_objects:
+    #         if isinstance(obj, Hunter):
+    #             continue  # Don't deepcopy or re-add hunter
+
+    #         new_obj = copy.deepcopy(obj)
+    #         new_obj.set_position(coord)
+    #         new_obj._current_room = self
+    #         self.add_to_grid(new_obj, coord)
+    #         self._active_objects.append((new_obj, coord))
+
+    #     # Step 3: Find the real Hunter and update its strategy
+    #     for obj in getattr(self, '_Map__objects', set()):
+    #         if isinstance(obj, Hunter):
+    #             obj.movement_strategy = gsm.get_hunter_strategy()
+    #             print("🐾 Hunter strategy reset to", type(obj.movement_strategy).__name__)
 
     def reset_objects(self):
         gsm = GameStateManager()
 
-        # Step 1: Only remove objects that aren't Player or Hunter (we keep the original Hunter alive)
+        # Step 1: Remove objects that aren't Player or Hunter
         for obj in list(getattr(self, '_Map__objects', set())):
             if not isinstance(obj, (Player, Hunter)):
                 self.remove_from_grid(obj, obj.get_position())
 
-        # Step 2: Deepcopy all _original_objects EXCEPT Hunter
+        # Step 2: Generate new items using generate_items()
+        new_items = self.generate_items()
         self._active_objects = []
-        for obj, coord in self._original_objects:
-            if isinstance(obj, Hunter):
-                continue  # Don't deepcopy or re-add hunter
+        for obj, coord in new_items:
+            # Create a fresh copy of the object
             new_obj = copy.deepcopy(obj)
             new_obj.set_position(coord)
             new_obj._current_room = self
             self.add_to_grid(new_obj, coord)
             self._active_objects.append((new_obj, coord))
 
-        # Step 3: Find the real Hunter and update its strategy
+        # Step 3: Update the existing Hunter’s movement strategy
         for obj in getattr(self, '_Map__objects', set()):
             if isinstance(obj, Hunter):
                 obj.movement_strategy = gsm.get_hunter_strategy()
