@@ -85,7 +85,7 @@ class ExampleHouse(Map):
             size=(15, 15), #size of the area in the example house  
             entry_point=Coord(14, 7),
             background_tile_image='grass',
-            background_music='pawsperil',
+            background_music='funsong',
         )
 
     def _get_keybinds(self) -> dict[str, Callable[["HumanPlayer"], list["Message"]]]:
