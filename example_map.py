@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     
 # -------------------------------------- DOOR ----------------------------------------------------------------- 
 class LockableDoor(Door):
-    def __init__(self, image_name: str, linked_room: str = "", is_main_entrance=False) -> None:
+    def __init__(self, image_name: str, linked_room: str = "", is_main_entrance=True) -> None:
         super().__init__(image_name, linked_room, is_main_entrance)
         self._locked = False  
 
@@ -86,6 +86,7 @@ class EntranceMenuPressurePlate(PressurePlate):
 
 # -------------------------------------- OUR HOUSE -----------------------------------------------------------------
 class ExampleHouse(Map):
+    MAIN_ENTRANCE = True
     def __init__(self) -> None:
         super().__init__(
             name="Test House",
@@ -93,7 +94,7 @@ class ExampleHouse(Map):
             size=(15, 15), #size of the area in the example house  
             entry_point=Coord(14, 7),
             background_tile_image='grass',
-            background_music='pawsperil',
+            background_music='funsong',
         )
 
     def _get_keybinds(self) -> dict[str, Callable[["HumanPlayer"], list["Message"]]]:
@@ -157,8 +158,7 @@ class ExampleHouse(Map):
         door = LockableDoor(
             'int_entrance',
             linked_room="Trottier Town",
-            # original_connected_room='int_entrance',  # or the actual map/room object if available
-            # original_entry_point=Coord(14, 7)           # set this to the proper entry point
+            is_main_entrance=True
         )
         door.unlock()  # ensure the door starts unlocked
         self.entrance_door = door  # store reference for later locking/unlocking
