@@ -4,8 +4,10 @@ import math
 import random
 from typing import Literal
 from .GameStateManager import GameStateManager
-from .MovementStrategy import *
-from .Observer import Observer
+from .MovementStrategy import RandomMovement
+from PIL import Image, ImageTk
+import tkinter as tk
+from abc import ABC
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -14,8 +16,8 @@ if TYPE_CHECKING:
     from tiles.base import MapObject
     from tiles.map_objects import *
     from NPC import NPC
-
-class Hunter(NPC, Observer):
+        
+class Hunter(NPC):
     """ A hunter NPC that moves randomly but chases the player when close. """
     
     def __init__(self, encounter_text: str, staring_distance: int = 0, facing_direction: Literal['up', 'down', 'left', 'right'] = 'down') -> None:
@@ -82,8 +84,43 @@ class Hunter(NPC, Observer):
         if -2 <= dist <= 1.5:
             # Hunter is 1 tile away → Trigger Game Over
             messages.append(EmoteMessage(self, player, 'exclamation', emote_pos=self._current_position))
-            messages.append(DialogueMessage(self, player, "GAME OVER! The hunter caught you.", self.get_image_name()))
+            
+            messages.append(
+                SoundMessage(
+                    recipient=player,
+                    sound_path="jumpscaresound.mp3",  
+                    volume=1.0,                        
+                    repeat=False                      
+                )
+            )
 
+            messages.append(
+                ChooseObjectMessage(
+                    sender=self,
+                    recipient=player,
+                    options=[{"": "image/tile/utility/jumpscare/scary1.png"}], 
+                    window_title="JUMPSCARE",
+                    sprite_size=500,           # Match the size of the window
+                    orientation="portrait",
+                    width=500,
+                    height=500,
+                    offset_x=0,
+                    offset_y=0,
+                    gap=0,
+                    label_height=0   # No label  
+                )
+            )
+
+            messages.append(DialogueMessage(
+                self, 
+                player, 
+                "GAME OVER! The hunter caught you.", 
+                self.get_image_name(), 
+                auto_delay=1000,
+                bg_color=(0, 0, 0),      # black background
+                text_color=(255, 255, 255)  # white text
+            ))
+            
             self.game_over_triggered = True  # Stop future movement
             gsm.set_game_state("lose")
             room = player.get_current_room()

@@ -89,6 +89,9 @@ class EntranceMenuPressurePlate(PressurePlate):
         #     self.step_count += 1
         command = ShowIntroCommand(self)
         return command.execute(player)
+    def select_option(self, player, option):
+        # Do nothing, or close the menu
+        return []
 
 # -------------------------------------- OUR HOUSE -----------------------------------------------------------------
 class ExampleHouse(Map):
