@@ -1,7 +1,9 @@
-from .MovementStrategy import TeleportMovement, ShortestPathMovement, RandomMovement
+from .imports import *
+from .Subject import Subject
+from .Observer import Observer
 import copy
 
-class GameStateManager:
+class GameStateManager(Subject):
     _instance = None  
 
     def __new__(cls):
@@ -18,11 +20,11 @@ class GameStateManager:
             self.collected_items = []  # Stores collected items (e.g., rock, flower)
             self.collected_animals = 0  # Count of collected animals
             self.total_animals = 12 # total animal to save
-            self.hunter_strategy = RandomMovement()  # Strategy pattern for hunter movement
             self._initialized = True  # Mark as true at first 
             self.tracked_picked_items = []  # for undo support
             self.current_map = None
             self._original_objects = []  # NEW: original layout
+            self._observers = [] # for the observer pattern
     
     def store_original_objects(self, objects):
         self._original_objects = [(copy.deepcopy(obj), coord) for obj, coord in objects]
@@ -35,15 +37,22 @@ class GameStateManager:
         self.collected_items.clear()
         self.collected_animals = 0
         self.tracked_picked_items.clear()
-        self.hunter_strategy = RandomMovement()
+            
+    def add_observer(self, observer: Observer):
+        self._observers.append(observer)
 
-    def get_hunter_strategy(self):
-        return self.hunter_strategy 
+    def remove_observer(self, observer: Observer):
+        if observer in self._observers:
+            self._observers.remove(observer)  
     
+    def notify_observers(self, event):
+        for observer in self._observers:
+            observer.on_notify(self, event)  
+
     def collect_item(self, item):
         """Update game state when the player collects an item."""
         self.collected_items.append(item)
-        self.update_hunter_strategy() 
+        self.notify_observers("ITEM_COLLECTED")
     
     def track_picked_item(self, item, coord):
         self.tracked_picked_items.append((coord, item))
@@ -52,30 +61,10 @@ class GameStateManager:
         """Update game state when the player collects an animal."""
         self.collected_animals += 1
         self.collected_items.append("animal")  
-        self.update_hunter_strategy() 
+        self.notify_observers("ANIMAL_COLLECTED")
         
-        if self.collected_animals >= self.total_animals:
-         if self.current_map is not None and hasattr(self.current_map, "entrance_door"):
-             if self.current_map.entrance_door._locked:
-                 self.current_map.entrance_door.unlock()
-
-    def update_hunter_strategy(self):
-        if not self.collected_items:
-            self.hunter_strategy = RandomMovement()
-            return
-
-        last_rock_index = max((i for i, item in enumerate(self.collected_items) if "rock" in item), default=-1)
-        last_flower_index = max((i for i, item in enumerate(self.collected_items) if "flower" in item), default=-1)
-        has_animal = any("animal" in item for item in self.collected_items)
-
-        if last_rock_index > last_flower_index: # it will always be teleport until the player picks up a flower
-            self.hunter_strategy = TeleportMovement()
-
-        elif has_animal: # at least once animal, then the hunter never goes back to shortest path
-            self.hunter_strategy = ShortestPathMovement()
-
-        elif last_flower_index != -1: # if doesnt have at least once animal, and we have a flower, hunter will be random 
-            self.hunter_strategy = RandomMovement()
+        # if self.collected_animals >= self.total_animals:
+        #     self.notify_observers("WIN")
 
     def undo_collect_item(self, item):
         item_type = None
@@ -95,13 +84,16 @@ class GameStateManager:
         if item_type == "animal":
             self.collected_animals = max(0, self.collected_animals - 1)
 
-        self.update_hunter_strategy()
-    
+        self.notify_observers("ITEM_COLLECTED")
 
     def set_game_state(self, state):
         """Change the game state."""
         if state in ["playing", "win", "lose"]:
             self.state = state
+        if state == "lose":
+            self.notify_observers("LOSE")
+        if state == "win":
+            self.notify_observers("WIN")
 
     def get_state(self):
         """Retrieve the current game state."""
@@ -122,4 +114,3 @@ class GameStateManager:
     def is_win(self):
         """Returns True if the player has reached the door after collecting all 12 animals."""
         return self.state == "win"
-
