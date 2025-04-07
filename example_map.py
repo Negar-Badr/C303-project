@@ -12,6 +12,7 @@ from .commands import *
 from .Hunter import Hunter
 from .utils import StaticSender
 import copy
+from .Observer import Observer
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -21,20 +22,30 @@ if TYPE_CHECKING:
     from tiles.map_objects import *
     
 # -------------------------------------- DOOR ----------------------------------------------------------------- 
-class LockableDoor(Door):
+class LockableDoor(Door, Observer):
     def __init__(self, image_name: str, linked_room: str = "", is_main_entrance=True) -> None:
         super().__init__(image_name, linked_room, is_main_entrance)
         self._locked = False  
+        self.set_passability = True  
 
     def lock(self):
         self._locked = True
+        self.set_passability = False  
 
     def unlock(self):
         self._locked = False
+        self.set_passability = True  
+        
+    def on_notify(self, subject, event):
+        if event in ["WIN", "LOSE"]:
+            self.unlock()
 
     def player_entered(self, player) -> list[Message]:
         if self._locked:
-            return [ChatMessage(StaticSender("SYSTEM"), player, "Uh oh... The door is locked until all animals are rescued [Evil Laugh]")]
+            self.set_passability = False  
+            return [ChatMessage(StaticSender("SYSTEM"), player, 
+                                "Uh oh... The door is locked until all animals are rescued [Evil Laugh]")]
+        self.set_passability = True
         return super().player_entered(player)
 
 # -------------------------------------- BACKGROUND -----------------------------------------------------------------
@@ -72,7 +83,7 @@ class EntranceMenuPressurePlate(PressurePlate):
         room = player.get_current_room()
         if hasattr(room, "entrance_door"):
             room.entrance_door.lock()
-        room.remove_from_grid(self, self.get_position()) 
+        room.remove_from_grid(self, self.get_position())
         command = ShowIntroCommand(self)
         return command.execute(player)
     def select_option(self, player, option):
@@ -254,6 +265,12 @@ class ExampleHouse(Map):
         GameStateManager().store_original_objects(objects)
         if not hasattr(self, "_original_objects"):
             self._original_objects = copy.deepcopy(objects)
+            
+        gsm = GameStateManager()
+        for obj, _ in objects:
+            # Check if the object is an observer.
+            if isinstance(obj, Observer):
+                gsm.add_observer(obj)
 
         return objects
     
@@ -280,5 +297,5 @@ class ExampleHouse(Map):
         # Step 3: Find the real Hunter and update its strategy
         for obj in getattr(self, '_Map__objects', set()):
             if isinstance(obj, Hunter):
-                obj.movement_strategy = gsm.get_hunter_strategy()
+                obj.movement_strategy = RandomMovement()
                 print("🐾 Hunter strategy reset to", type(obj.movement_strategy).__name__)

@@ -2,6 +2,7 @@ from .imports import *
 from .GameStateManager import GameStateManager
 from abc import ABC
 from .utils import StaticSender
+from .Observer import Observer
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
