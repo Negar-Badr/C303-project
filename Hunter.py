@@ -5,8 +5,8 @@ import random
 from typing import Literal
 from .GameStateManager import GameStateManager
 from .MovementStrategy import RandomMovement
-from PIL import Image, ImageTk
-import tkinter as tk
+# from PIL import Image, ImageTk
+# import tkinter as tk
 from abc import ABC
 
 from typing import TYPE_CHECKING
