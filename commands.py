@@ -131,3 +131,37 @@ class ShowIntroCommand(Command):
         )
 
         return messages
+
+class ResetCommand(Command):
+    from .utils import StaticSender
+    from .Hunter import Hunter
+    from .example_map import ExampleHouse
+
+    def execute(self, player):
+        gsm = GameStateManager()
+
+        if gsm.get_state() not in ["win", "lose"]:
+            return [
+                ChatMessage(player, player.get_current_room(), "You can only reset after winning or losing the game."),
+            ]
+
+        # Reset game variables
+        gsm.reset_game_state()
+
+        current_map = gsm.current_map
+        if current_map and hasattr(current_map, "reset_objects"):
+            current_map.reset_objects()
+            current_map.remove_player(player)
+            current_map.add_player(player)
+            print("Map objects and player have been reset.")
+
+            for obj, _ in current_map._active_objects:
+                if isinstance(obj, self.Hunter):
+                    print("🐾 Hunter strategy after reset is:", type(obj.movement_strategy).__name__)
+
+            return [
+                GridMessage(player),
+                ChatMessage(player, current_map, "Game has been reset with fresh map state!")
+            ]
+
+        return [ChatMessage(player, current_map, "Could not reset this map!")]

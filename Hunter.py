@@ -103,9 +103,9 @@ class Hunter(NPC):
             self.game_over_triggered = True  # Stop future movement
             gsm.set_game_state("lose")
             room = player.get_current_room()
-            if room:
-                room.remove_from_grid(player, player.get_current_position())  # Player stops moving
-                #TODO Player should be given an option here to restart or leave the game, and then the correct action would be taken
+            # if room:
+            #     room.remove_from_grid(player, player.get_current_position())  # Player stops moving
+            #     #TODO Player should be given an option here to restart or leave the game, and then the correct action would be taken
             return messages
            
         if gsm.collected_animals >= gsm.total_animals and (player._current_position == Coord(14,7) or player._current_position == Coord(14,8)):

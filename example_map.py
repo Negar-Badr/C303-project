@@ -11,6 +11,7 @@ from collections.abc import Callable
 from .commands import *
 from .Hunter import Hunter
 from .utils import StaticSender
+import copy
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -104,6 +105,7 @@ class ExampleHouse(Map):
             "right": move_with_direction("right"),
             "j": lambda player: JumpCommand().execute(player),  # jump still works
             "z": lambda player: UndoCommand().execute(player),
+            "r": lambda player: ResetCommand().execute(player),
         })
 
         return keybinds
@@ -249,5 +251,34 @@ class ExampleHouse(Map):
         # Replace the previous pressure plate with the entrance menu pressure plate
         entrance_plate = EntranceMenuPressurePlate('grass')
         objects.append((entrance_plate, Coord(13, 7)))
+        GameStateManager().store_original_objects(objects)
+        if not hasattr(self, "_original_objects"):
+            self._original_objects = copy.deepcopy(objects)
 
         return objects
+    
+
+    def reset_objects(self):
+        gsm = GameStateManager()
+
+        # Step 1: Only remove objects that aren't Player or Hunter (we keep the original Hunter alive)
+        for obj in list(getattr(self, '_Map__objects', set())):
+            if not isinstance(obj, (Player, Hunter)):
+                self.remove_from_grid(obj, obj.get_position())
+
+        # Step 2: Deepcopy all _original_objects EXCEPT Hunter
+        self._active_objects = []
+        for obj, coord in self._original_objects:
+            if isinstance(obj, Hunter):
+                continue  # Don't deepcopy or re-add hunter
+            new_obj = copy.deepcopy(obj)
+            new_obj.set_position(coord)
+            new_obj._current_room = self
+            self.add_to_grid(new_obj, coord)
+            self._active_objects.append((new_obj, coord))
+
+        # Step 3: Find the real Hunter and update its strategy
+        for obj in getattr(self, '_Map__objects', set()):
+            if isinstance(obj, Hunter):
+                obj.movement_strategy = gsm.get_hunter_strategy()
+                print("🐾 Hunter strategy reset to", type(obj.movement_strategy).__name__)
