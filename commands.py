@@ -2,6 +2,9 @@ from abc import ABC, abstractmethod
 from .imports import *
 from .GameStateManager import GameStateManager
 from typing import TYPE_CHECKING
+from .MovementStrategy import RandomMovement
+from .example_map import ExampleHouse
+
 if TYPE_CHECKING:
     from coord import Coord
 
@@ -55,8 +58,25 @@ class JumpCommand(Command):
         messages.append(GridMessage(player))
         return messages
     
-       
+class ResetCommand(Command):
+    def execute(self, player):
+        gsm = GameStateManager()
+        gsm.set_game_state("playing")
+        self.collected_items = []  # Stores collected items (e.g., rock, flower)
+        self.collected_animals = 0  # Count of collected animals
+        self.hunter_strategy = RandomMovement()
+        self._initialized = True  # Mark as true at first
+        self.tracked_picked_items = []  # for undo support
+        self.current_map = None
 
+        # Create a new map instance to generate a new, random layout.
+        new_map = ExampleHouse()
+        self.current_map = new_map
+
+        new_map.add_player(player)
+
+        print("its working")
+        return [GridMessage(player), ChatMessage(player, player.get_current_room(), "You have reset the game.")]  # TODO: add a message for the player
 
 class UndoCommand(Command):
     def execute(self, player):

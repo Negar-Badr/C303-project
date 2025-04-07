@@ -101,6 +101,7 @@ class ExampleHouse(Map):
             "right": move_with_direction("right"),
             "j": lambda player: JumpCommand().execute(player),  # jump still works
             "z": lambda player: UndoCommand().execute(player),
+            "r": lambda player: ResetCommand().execute(player),
         })
 
         return keybinds
