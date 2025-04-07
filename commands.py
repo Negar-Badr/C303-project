@@ -135,7 +135,7 @@ class ShowIntroCommand(Command):
 class ResetCommand(Command):
     from .utils import StaticSender
     from .Hunter import Hunter
-    from .example_map import ExampleHouse
+    # from .example_map import ExampleHouse
 
     def execute(self, player):
         gsm = GameStateManager()
