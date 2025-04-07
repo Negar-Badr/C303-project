@@ -4,7 +4,7 @@ import math
 import random
 from typing import Literal
 from .GameStateManager import GameStateManager
-from .MovementStrategy import RandomMovement
+from .MovementStrategy import *
 # from PIL import Image, ImageTk
 # import tkinter as tk
 from abc import ABC

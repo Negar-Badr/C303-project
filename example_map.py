@@ -83,6 +83,7 @@ class EntranceMenuPressurePlate(PressurePlate):
         room = player.get_current_room()
         if hasattr(room, "entrance_door"):
             room.entrance_door.lock()
+        room.remove_from_grid(self, self.get_position())
         command = ShowIntroCommand(self)
         return command.execute(player)
     def select_option(self, player, option):
