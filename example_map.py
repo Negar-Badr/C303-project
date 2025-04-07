@@ -257,12 +257,6 @@ class ExampleHouse(Map):
             staring_distance=1,
         )
         objects.append((hunter, Coord(3,8)))
-        
-        gsm = GameStateManager()
-        for obj, _ in objects:
-            # Check if the object is an observer.
-            if isinstance(obj, Observer):
-                gsm.add_observer(obj)
 
         # add a pressure plate
         # Replace the previous pressure plate with the entrance menu pressure plate
@@ -271,6 +265,12 @@ class ExampleHouse(Map):
         GameStateManager().store_original_objects(objects)
         if not hasattr(self, "_original_objects"):
             self._original_objects = copy.deepcopy(objects)
+            
+        gsm = GameStateManager()
+        for obj, _ in objects:
+            # Check if the object is an observer.
+            if isinstance(obj, Observer):
+                gsm.add_observer(obj)
 
         return objects
     
@@ -297,5 +297,5 @@ class ExampleHouse(Map):
         # Step 3: Find the real Hunter and update its strategy
         for obj in getattr(self, '_Map__objects', set()):
             if isinstance(obj, Hunter):
-                obj.movement_strategy = gsm.get_hunter_strategy()
+                obj.movement_strategy = RandomMovement()
                 print("🐾 Hunter strategy reset to", type(obj.movement_strategy).__name__)

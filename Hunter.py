@@ -52,17 +52,17 @@ class Hunter(NPC, Observer):
 
             elif last_flower_index != -1: # if doesnt have at least once animal, and we have a flower, hunter will be random 
                 self.movement_strategy = RandomMovement()
-        elif event == "WIN":
-            self.handle_win()
-        elif event == "LOSE":
-            self.handle_lose()
+        # elif event == "WIN":
+        #     self.handle_win()
+        # elif event == "LOSE":
+        #     self.handle_lose()
             
-    def handle_lose(self):
-        return [] 
+    # def handle_lose(self):
+    #     return [] 
 
-    def handle_win(self):
-        player = self._find_player()
-        return [DialogueMessage(self, player, "CONGRATULATIONS, YOU WIN!", self.get_image_name())]
+    # def handle_win(self):
+    #     player = self._find_player()
+    #     return [DialogueMessage(self, player, "CONGRATULATIONS, YOU WIN!", self.get_image_name())]
     
     def _find_player(self):
         room = self.get_current_room()
@@ -81,6 +81,11 @@ class Hunter(NPC, Observer):
 
         # Get distance between Hunter and Player
         dist = self._current_position.distance(player.get_current_position())
+        
+        if gsm.is_game_over():
+            return []
+        if gsm.is_win():
+            return [DialogueMessage(self, player, "CONGRATULATIONS, YOU WIN!", self.get_image_name())]
 
         if -2 <= dist <= 1.5:
             # Hunter is 1 tile away → Trigger Game Over
@@ -124,7 +129,7 @@ class Hunter(NPC, Observer):
             
             self.game_over_triggered = True  # Stop future movement
             gsm.set_game_state("lose")
-            room = player.get_current_room()
+            # room = player.get_current_room()
             # if room:
             #     room.remove_from_grid(player, player.get_current_position())  # Player stops moving
             #     #TODO Player should be given an option here to restart or leave the game, and then the correct action would be taken
