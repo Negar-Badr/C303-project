@@ -8,7 +8,7 @@ from .Animal import Cow, Monkey, Owl, Rabbit
 from .Flower import Daisy, Orchid, Daffodil, Tulip
 from .MovementStrategy import RandomMovement
 from collections.abc import Callable
-from .commands import *
+from .commands import ShowIntroCommand, UndoCommand, ResetCommand, JumpCommand
 from .Hunter import Hunter
 from .utils import StaticSender
 

@@ -3,7 +3,7 @@ from .imports import *
 from .GameStateManager import GameStateManager
 from typing import TYPE_CHECKING
 from .MovementStrategy import RandomMovement
-from .example_map import ExampleHouse
+# from .example_map import ExampleHouse
 
 if TYPE_CHECKING:
     from coord import Coord
@@ -60,18 +60,26 @@ class JumpCommand(Command):
     
 class ResetCommand(Command):
     def execute(self, player):
+        from .example_map import ExampleHouse  
+        from .GameStateManager import GameStateManager
+        from .MovementStrategy import RandomMovement
+        from .utils import StaticSender
+
         gsm = GameStateManager()
         gsm.set_game_state("playing")
-        self.collected_items = []  # Stores collected items (e.g., rock, flower)
-        self.collected_animals = 0  # Count of collected animals
-        self.hunter_strategy = RandomMovement()
-        self._initialized = True  # Mark as true at first
-        self.tracked_picked_items = []  # for undo support
-        self.current_map = None
-
+        gsm.collected_items = [] # Stores collected items (e.g., rock, flower)
+        gsm.collected_animals = 0  # Count of collected animals
+        gsm.hunter_strategy = RandomMovement()
+        gsm._initialized = True  # Mark as true at first
+        gsm.tracked_picked_items = []  # for undo support
+        gsm.current_map = None
+        # room = self.current_map
+        # status, err = room.remove_from_grid(hunter, hunter.get_current_position())
+        # if not status:
+        #     return []
         # Create a new map instance to generate a new, random layout.
         new_map = ExampleHouse()
-        self.current_map = new_map
+        gsm.current_map = new_map
 
         new_map.add_player(player)
 
