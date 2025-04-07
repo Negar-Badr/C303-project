@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from tiles.map_objects import *
     
 # -------------------------------------- DOOR ----------------------------------------------------------------- 
-class LockableDoor(Door):
+class LockableDoor(Door, Observer):
     def __init__(self, image_name: str, linked_room: str = "", is_main_entrance=True) -> None:
         super().__init__(image_name, linked_room, is_main_entrance)
         self._locked = False  
@@ -34,6 +34,10 @@ class LockableDoor(Door):
     def unlock(self):
         self._locked = False
         self.set_passability = True  
+        
+    def on_notify(self, subject, event):
+        if event in ["WIN", "LOSE"]:
+            self.unlock()
 
     def player_entered(self, player) -> list[Message]:
         if self._locked:
@@ -49,13 +53,9 @@ class Tree(MapObject):
         super().__init__(f"tile/background/{image_name}", passable=False)
 
 # -------------------------------------- ROCKS -----------------------------------------------------------------
-class Rock(PressurePlate, Observer):
+class Rock(PressurePlate):
     def __init__(self, image_name='rock'):
         super().__init__(image_name)
-    
-    #TODO 
-    def on_notify(self, subject, event):
-        pass
         
     def player_entered(self, player) -> list[Message]:
         """Handles when the player steps on a Rock."""

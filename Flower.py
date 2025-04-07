@@ -11,14 +11,10 @@ if TYPE_CHECKING:
     from tiles.base import MapObject
     from tiles.map_objects import *
 
-class Flower(PressurePlate, Observer, ABC):
+class Flower(PressurePlate, ABC):
     def __init__(self, flower_name: str, image_name: str):
         super().__init__(f'flowers/{image_name}')
         self.flower_name = flower_name
-    
-    #TODO   
-    def on_notify(self, subject, event):
-        pass
 
     def player_entered(self, player) -> list[Message]:
         if hasattr(player, "is_hunter"): return []

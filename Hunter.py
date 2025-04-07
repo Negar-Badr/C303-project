@@ -4,10 +4,11 @@ import math
 import random
 from typing import Literal
 from .GameStateManager import GameStateManager
-from .MovementStrategy import RandomMovement
+from .MovementStrategy import *
 from PIL import Image, ImageTk
 import tkinter as tk
 from abc import ABC
+from .Observer import Observer
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -17,7 +18,7 @@ if TYPE_CHECKING:
     from tiles.map_objects import *
     from NPC import NPC
         
-class Hunter(NPC):
+class Hunter(NPC, Observer):
     """ A hunter NPC that moves randomly but chases the player when close. """
     
     def __init__(self, encounter_text: str, staring_distance: int = 0, facing_direction: Literal['up', 'down', 'left', 'right'] = 'down') -> None:
@@ -123,10 +124,10 @@ class Hunter(NPC):
             
             self.game_over_triggered = True  # Stop future movement
             gsm.set_game_state("lose")
-            room = player.get_current_room()
-            if room:
-                room.remove_from_grid(player, player.get_current_position())  # Player stops moving
-                #TODO Player should be given an option here to restart or leave the game, and then the correct action would be taken
+            # room = player.get_current_room()
+            # if room:
+            #     room.remove_from_grid(player, player.get_current_position())  # Player stops moving
+            #     #TODO Player should be given an option here to restart or leave the game, and then the correct action would be taken
             return messages
            
         if gsm.collected_animals >= gsm.total_animals and (player._current_position == Coord(14,7) or player._current_position == Coord(14,8)):
