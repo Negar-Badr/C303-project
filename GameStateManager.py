@@ -63,8 +63,8 @@ class GameStateManager(Subject):
         self.collected_items.append("animal")  
         self.notify_observers("ANIMAL_COLLECTED")
         
-        if self.collected_animals >= self.total_animals:
-            self.notify_observers("WIN")
+        # if self.collected_animals >= self.total_animals:
+        #     self.notify_observers("WIN")
 
     def undo_collect_item(self, item):
         item_type = None
