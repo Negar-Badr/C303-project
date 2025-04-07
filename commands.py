@@ -99,13 +99,15 @@ class ShowIntroCommand(Command):
         messages = []
 
         intro_text = (
-            "Welcome to Paws in Peril!\n"
-            "Save all animals and escape without getting caught by the hunter.\n"
-            "You can jump using j."
+            "Rescue all animals!\n"
+            "Beware of rocks!\n"
+            "Grab flowers to stay safe:)"
         )
+
         tips_text = (
-            "Steer clear of the rocks, and collect flowers to nullify their effect.\n"
-            "Good luck!"
+            "- Press J to Jump\n"
+            "- Press Z to Undo\n"
+            "- Press R to Restart the Game\n\n"
         )
         messages.append(
             DialogueMessage(

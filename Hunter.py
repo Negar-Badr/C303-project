@@ -16,34 +16,6 @@ if TYPE_CHECKING:
     from tiles.base import MapObject
     from tiles.map_objects import *
     from NPC import NPC
-
-class ScaryPopup(ABC):
-    def __init__(self, root_window, image_path: str, text: str = "You're mine now!"):
-        self._window = tk.Toplevel(root_window)
-        self._window.title("GAME OVER")
-        self._window.geometry("400x300")
-        self._window.configure(bg="black")
-        self._window.resizable(False, False)
-
-        # Load and place the image
-        img = Image.open(image_path)
-        img = img.resize((200, 200))
-        self._tk_img = ImageTk.PhotoImage(img)
-
-        image_label = tk.Label(self._window, image=self._tk_img, bg="black")
-        image_label.pack(pady=10)
-
-        # Add text label
-        text_label = tk.Label(self._window, text=text, fg="white", bg="black", font=("Consolas", 14, "bold"))
-        text_label.pack()
-
-        # Close on click or key
-        self._window.bind("<Return>", lambda e: self._window.destroy())
-        self._window.bind("<Escape>", lambda e: self._window.destroy())
-        self._window.focus_set()
-
-    def run(self):
-        self._window.wait_window()
         
 class Hunter(NPC):
     """ A hunter NPC that moves randomly but chases the player when close. """
@@ -118,8 +90,16 @@ class Hunter(NPC):
                 )
             )
 
-            messages.append(DialogueMessage(self, player, "GAME OVER! The hunter caught you.", self.get_image_name(), auto_delay=1000))
-
+            messages.append(DialogueMessage(
+                self, 
+                player, 
+                "GAME OVER! The hunter caught you.", 
+                self.get_image_name(), 
+                auto_delay=1000,
+                bg_color=(0, 0, 0),      # black background
+                text_color=(255, 255, 255)  # white text
+            ))
+            
             self.game_over_triggered = True  # Stop future movement
             gsm.set_game_state("lose")
             room = player.get_current_room()
