@@ -131,19 +131,14 @@ class ShowIntroCommand(Command):
         )
 
         return messages
-
-class ResetCommand(Command):
+    
+class PlayCommand(Command):
     from .utils import StaticSender
     from .Hunter import Hunter
     # from .example_map import ExampleHouse
 
     def execute(self, player):
         gsm = GameStateManager()
-
-        if gsm.get_state() not in ["win", "lose"]:
-            return [
-                ChatMessage(player, player.get_current_room(), "You can only reset after winning or losing the game."),
-            ]
 
         # Reset game variables
         gsm.reset_game_state()
@@ -165,3 +160,16 @@ class ResetCommand(Command):
             ]
 
         return [ChatMessage(player, current_map, "Could not reset this map!")]
+
+class ResetCommand(PlayCommand):
+    from .utils import StaticSender
+    from .Hunter import Hunter
+    # from .example_map import ExampleHouse
+
+    def execute(self, player):
+        gsm = GameStateManager()
+        if gsm.get_state() not in ["win", "lose"]:
+            return [
+                ChatMessage(player, player.get_current_room(), "You can only reset after winning or losing the game."),
+            ]
+        super().execute(player)

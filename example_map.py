@@ -117,6 +117,7 @@ class ExampleHouse(Map):
             "j": lambda player: JumpCommand().execute(player),  # jump still works
             "z": lambda player: UndoCommand().execute(player),
             "r": lambda player: ResetCommand().execute(player),
+            "p": lambda player: PlayCommand().execute(player),
         })
 
         return keybinds
