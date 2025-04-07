@@ -78,15 +78,10 @@ class Rock(PressurePlate):
     
 # ------------------------------------ GAME INSTRUCTIONS ---------------------------------------------------------------   
 class EntranceMenuPressurePlate(PressurePlate):
-    #step_count = 0
-    
     def player_entered(self, player) -> list[Message]:
         room = player.get_current_room()
         if hasattr(room, "entrance_door"):
             room.entrance_door.lock()
-        room.remove_from_grid(self, self.get_position()) 
-        # if self.step_count == 0:
-        #     self.step_count += 1
         command = ShowIntroCommand(self)
         return command.execute(player)
     def select_option(self, player, option):
@@ -261,7 +256,10 @@ class ExampleHouse(Map):
         objects.append((hunter, Coord(3,8)))
         
         gsm = GameStateManager()
-        gsm.add_observer(hunter)
+        for obj, _ in objects:
+            # Check if the object is an observer.
+            if isinstance(obj, Observer):
+                gsm.add_observer(obj)
 
         # add a pressure plate
         # Replace the previous pressure plate with the entrance menu pressure plate

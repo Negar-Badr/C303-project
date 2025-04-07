@@ -77,14 +77,8 @@ class GameStateManager(Subject):
         if state in ["playing", "win", "lose"]:
             self.state = state
         if state == "lose":
-            if self.current_map is not None and hasattr(self.current_map, "entrance_door"):
-                if self.current_map.entrance_door._locked:
-                    self.current_map.entrance_door.unlock()
             self.notify_observers("LOSE")
         if state == "win":
-            if self.current_map is not None and hasattr(self.current_map, "entrance_door"):
-                if self.current_map.entrance_door._locked:
-                    self.current_map.entrance_door.unlock()
             self.notify_observers("WIN")
 
     def get_state(self):
