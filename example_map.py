@@ -25,16 +25,22 @@ class LockableDoor(Door):
     def __init__(self, image_name: str, linked_room: str = "", is_main_entrance=True) -> None:
         super().__init__(image_name, linked_room, is_main_entrance)
         self._locked = False  
+        self.set_passability = True  
 
     def lock(self):
         self._locked = True
+        self.set_passability = False  
 
     def unlock(self):
         self._locked = False
+        self.set_passability = True  
 
     def player_entered(self, player) -> list[Message]:
         if self._locked:
-            return [ChatMessage(StaticSender("SYSTEM"), player, "Uh oh... The door is locked until all animals are rescued [Evil Laugh]")]
+            self.set_passability = False  
+            return [ChatMessage(StaticSender("SYSTEM"), player, 
+                                "Uh oh... The door is locked until all animals are rescued [Evil Laugh]")]
+        self.set_passability = True
         return super().player_entered(player)
 
 # -------------------------------------- BACKGROUND -----------------------------------------------------------------
