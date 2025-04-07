@@ -82,10 +82,10 @@ class Hunter(NPC, Observer):
         # Get distance between Hunter and Player
         dist = self._current_position.distance(player.get_current_position())
         
-        if gsm.is_game_over():
+        if gsm.is_game_over() or gsm.is_win():
             return []
-        if gsm.is_win():
-            return [DialogueMessage(self, player, "CONGRATULATIONS, YOU WIN!", self.get_image_name())]
+        # if gsm.is_win():
+        #     return [DialogueMessage(self, player, "CONGRATULATIONS, YOU WIN!", self.get_image_name())]
 
         if -2 <= dist <= 1.5:
             # Hunter is 1 tile away → Trigger Game Over
@@ -137,6 +137,7 @@ class Hunter(NPC, Observer):
            
         if gsm.collected_animals >= gsm.total_animals and (player._current_position == Coord(14,7) or player._current_position == Coord(14,8)):
             gsm.set_game_state("win") #  Win condition triggered!
+            return [DialogueMessage(self, player, "CONGRATULATIONS, YOU WIN!", self.get_image_name())]
         
         return messages
     
