@@ -102,10 +102,6 @@ class GameStateManager(Subject):
     def get_collected_items(self):
         """Retrieve the collected items."""
         return self.collected_items
-
-    def get_hunter_strategy(self):
-        """Retrieve the current hunter strategy."""
-        return self.hunter_strategy
     
     def is_game_over(self):
         """Returns True if the game is over, preventing further movement."""

@@ -120,7 +120,7 @@ class Hunter(NPC, Observer):
             messages.append(DialogueMessage(
                 self, 
                 player, 
-                "GAME OVER! The hunter caught you.", 
+                "GAME OVER! The hunter caught you.\nPress 'r' to restart or leave the room", 
                 self.get_image_name(), 
                 auto_delay=1000,
                 bg_color=(0, 0, 0),      # black background
@@ -137,7 +137,7 @@ class Hunter(NPC, Observer):
            
         if gsm.collected_animals >= gsm.total_animals and (player._current_position == Coord(14,7) or player._current_position == Coord(14,8)):
             gsm.set_game_state("win") #  Win condition triggered!
-            return [DialogueMessage(self, player, "CONGRATULATIONS, YOU WIN!", self.get_image_name())]
+            return [DialogueMessage(self, player, "CONGRATULATIONS, YOU WIN!\nPress 'r' to restart or leave the room", self.get_image_name())]
         
         return messages
     
