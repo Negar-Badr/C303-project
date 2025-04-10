@@ -160,7 +160,7 @@ class Hunter(NPC, Observer):
                 ChooseObjectMessage(
                     sender=self,
                     recipient=player,
-                    options=[{"": "image/tile/utility/win/winimage.jpg"}], 
+                    options=[{"": "image/tile/utility/win/winimage.png"}], 
                     window_title="WIN",
                     sprite_size=500,           # Match the size of the window
                     orientation="portrait",
