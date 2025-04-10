@@ -120,13 +120,23 @@ class Hunter(NPC, Observer):
             messages.append(DialogueMessage(
                 self, 
                 player, 
-                "GAME OVER! The hunter caught you.\nPress 'r' to restart or leave the room", 
+                "GAME OVER! The hunter caught you.", 
                 self.get_image_name(), 
                 auto_delay=1000,
                 bg_color=(0, 0, 0),      # black background
                 text_color=(255, 255, 255)  # white text
             ))
             
+            messages.append(DialogueMessage(
+                self, 
+                player, 
+                "Press 'r' to restart or leave the room", 
+                self.get_image_name(), 
+                auto_delay=1000,
+                bg_color=(0, 0, 0),      # black background
+                text_color=(255, 255, 255)  # white text
+            ))
+
             self.game_over_triggered = True  # Stop future movement
             gsm.set_game_state("lose")
             # room = player.get_current_room()

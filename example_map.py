@@ -116,8 +116,8 @@ class ExampleHouse(Map):
             "right": move_with_direction("right"),
             "j": lambda player: JumpCommand().execute(player),  # jump still works
             "z": lambda player: UndoCommand().execute(player),
-            "r": lambda player: ResetCommand().execute(player),
-            "p": lambda player: PlayCommand().execute(player),
+            "r": lambda player: ResetCommand().execute(player), # to reset 
+            "p": lambda player: ResetCommand().execute(player), # to play 
         })
 
         return keybinds
@@ -284,7 +284,7 @@ class ExampleHouse(Map):
         for obj in getattr(self, '_Map__objects', set()):
             if isinstance(obj, Hunter):
                 obj.movement_strategy = RandomMovement()
-                print("🐾 Hunter strategy reset to", type(obj.movement_strategy).__name__)
+                print("Hunter strategy reset to", type(obj.movement_strategy).__name__)
 
         # --- Add the Entrance Door ---
         door = LockableDoor(

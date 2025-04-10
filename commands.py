@@ -56,8 +56,6 @@ class JumpCommand(Command):
         return messages
     
        
-
-
 class UndoCommand(Command):
     def execute(self, player):
         gsm = GameStateManager()
@@ -100,14 +98,14 @@ class ShowIntroCommand(Command):
 
         intro_text = (
             "Rescue all animals!\n"
-            "Beware of rocks!\n"
-            "Grab flowers to stay safe:)"
+            "Avoid rocks!\n"
+            "Collect flowers to stay safe:)"
         )
 
         tips_text = (
-            "- Press J to Jump\n"
-            "- Press Z to Undo\n"
-            "- Press R to Restart the Game\n\n"
+            "- Press 'j' to jump\n"
+            "- Press 'z' to undo\n"
+            "- Press 'p' to play\n"
         )
         messages.append(
             DialogueMessage(
@@ -132,13 +130,18 @@ class ShowIntroCommand(Command):
 
         return messages
     
-class PlayCommand(Command):
+class ResetCommand(Command):
     from .utils import StaticSender
     from .Hunter import Hunter
-    # from .example_map import ExampleHouse
+    from .example_map import ExampleHouse
 
     def execute(self, player):
         gsm = GameStateManager()
+
+        if gsm.get_state() not in ["win", "lose"]:
+            return [
+                ChatMessage(player, player.get_current_room(), "You can only reset after winning or losing the game."),
+            ]
 
         # Reset game variables
         gsm.reset_game_state()
@@ -152,7 +155,7 @@ class PlayCommand(Command):
 
             for obj, _ in current_map._active_objects:
                 if isinstance(obj, self.Hunter):
-                    print("🐾 Hunter strategy after reset is:", type(obj.movement_strategy).__name__)
+                    print("Hunter strategy after reset is:", type(obj.movement_strategy).__name__)
 
             return [
                 GridMessage(player),
@@ -160,16 +163,3 @@ class PlayCommand(Command):
             ]
 
         return [ChatMessage(player, current_map, "Could not reset this map!")]
-
-class ResetCommand(PlayCommand):
-    from .utils import StaticSender
-    from .Hunter import Hunter
-    # from .example_map import ExampleHouse
-
-    def execute(self, player):
-        gsm = GameStateManager()
-        if gsm.get_state() not in ["win", "lose"]:
-            return [
-                ChatMessage(player, player.get_current_room(), "You can only reset after winning or losing the game."),
-            ]
-        super().execute(player)
