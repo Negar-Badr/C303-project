@@ -84,8 +84,6 @@ class Hunter(NPC, Observer):
         
         if gsm.is_game_over() or gsm.is_win():
             return []
-        # if gsm.is_win():
-        #     return [DialogueMessage(self, player, "CONGRATULATIONS, YOU WIN!", self.get_image_name())]
 
         if -2 <= dist <= 1.5:
             # Hunter is 1 tile away → Trigger Game Over
@@ -113,7 +111,7 @@ class Hunter(NPC, Observer):
                     offset_x=0,
                     offset_y=0,
                     gap=0,
-                    label_height=0   # No label  
+                    label_height=0,   # No label  
                 )
             )
 
@@ -145,9 +143,55 @@ class Hunter(NPC, Observer):
             #     #TODO Player should be given an option here to restart or leave the game, and then the correct action would be taken
             return messages
            
-        if gsm.collected_animals >= gsm.total_animals and (player._current_position == Coord(14,7) or player._current_position == Coord(14,8)):
+        # if gsm.collected_animals >= gsm.total_animals and (player._current_position == Coord(14,7) or player._current_position == Coord(14,8)):
+        if gsm.collected_animals >= gsm.total_animals: 
             gsm.set_game_state("win") #  Win condition triggered!
-            return [DialogueMessage(self, player, "CONGRATULATIONS, YOU WIN!\nPress 'r' to restart or leave the room", self.get_image_name())]
+
+            messages.append(
+                SoundMessage(
+                    recipient=player,
+                    sound_path="win.mp3",  
+                    volume=1.0,                        
+                    repeat=False                      
+                )
+            )
+
+            messages.append(
+                ChooseObjectMessage(
+                    sender=self,
+                    recipient=player,
+                    options=[{"": "image/tile/utility/win/winimage.jpg"}], 
+                    window_title="WIN",
+                    sprite_size=500,           # Match the size of the window
+                    orientation="portrait",
+                    width=500,
+                    height=500,
+                    offset_x=0,
+                    offset_y=0,
+                    gap=0,
+                    label_height=0   # No label  
+                )
+            )
+
+            messages.append(DialogueMessage(
+                self,
+                player,
+                "CONGRATULATIONS, YOU WIN!\n",
+                self.get_image_name(),
+                bg_color=(255, 182, 193),  
+                text_color=(0, 0, 0)  
+            ))
+
+            messages.append(DialogueMessage(
+                self,
+                player,
+                "Press 'r' to restart or leave the room",
+                self.get_image_name(),
+                bg_color=(255, 182, 193),  
+                text_color=(0, 0, 0)
+            ))
+            return messages
+        
         
         return messages
     
