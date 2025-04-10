@@ -128,7 +128,7 @@ class Hunter(NPC, Observer):
             messages.append(DialogueMessage(
                 self, 
                 player, 
-                "Press 'r' to restart or leave the room", 
+                "Please leave the room.\nTo restart the game, come back and press 'r'", 
                 self.get_image_name(), 
                 auto_delay=1000,
                 bg_color=(0, 0, 0),      # black background
@@ -185,7 +185,7 @@ class Hunter(NPC, Observer):
             messages.append(DialogueMessage(
                 self,
                 player,
-                "Press 'r' to restart or leave the room",
+                "Please leave the room.\nTo restart the game, come back and press 'r'",
                 self.get_image_name(),
                 bg_color=(255, 182, 193),  
                 text_color=(0, 0, 0)
