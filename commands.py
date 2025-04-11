@@ -105,7 +105,7 @@ class ShowIntroCommand(Command):
         tips_text = (
             "- Press 'j' to jump\n"
             "- Press 'z' to undo\n"
-            "- Press 'p' to play\n"
+            "- Press 'r' to reset the map"
         )
         messages.append(
             DialogueMessage(
@@ -131,13 +131,11 @@ class ShowIntroCommand(Command):
         return messages
     
 class ResetCommand(Command):
-    from .utils import StaticSender
+    """A command that resets the game"""
     from .Hunter import Hunter
-    from .example_map import ExampleHouse
-
+    
     def execute(self, player):
         gsm = GameStateManager()
-
         if gsm.get_state() not in ["win", "lose"]:
             return [
                 ChatMessage(player, player.get_current_room(), "You can only reset after winning or losing the game."),

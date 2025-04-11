@@ -29,13 +29,13 @@ class Hunter(NPC, Observer):
             facing_direction=facing_direction,
             staring_distance=staring_distance,
         )
-        self.game_over_triggered = False  # Flag to stop movement after game over
         self.movement_strategy = RandomMovement()
         self.is_hunter = True
         
-    def on_notify(self, subject, event):
+    def on_notify(self, event):
+        gsm = GameStateManager()
         if event in (["ITEM_COLLECTED", "ANIMAL_COLLECTED"]):
-            collected_items = subject.get_collected_items()
+            collected_items = gsm.get_collected_items()
             if not collected_items:
                 self.movement_strategy = RandomMovement()
                 return
@@ -52,17 +52,10 @@ class Hunter(NPC, Observer):
 
             elif last_flower_index != -1: # if doesnt have at least once animal, and we have a flower, hunter will be random 
                 self.movement_strategy = RandomMovement()
-        # elif event == "WIN":
-        #     self.handle_win()
-        # elif event == "LOSE":
-        #     self.handle_lose()
-            
-    # def handle_lose(self):
-    #     return [] 
-
-    # def handle_win(self):
-    #     player = self._find_player()
-    #     return [DialogueMessage(self, player, "CONGRATULATIONS, YOU WIN!", self.get_image_name())]
+        elif event == "WIN":
+            self.movement_strategy = ShortestPathMovement()
+        elif event == "LOSE":
+            self.movement_strategy = RandomMovement()
     
     def _find_player(self):
         room = self.get_current_room()
@@ -135,12 +128,7 @@ class Hunter(NPC, Observer):
                 text_color=(255, 255, 255)  # white text
             ))
 
-            self.game_over_triggered = True  # Stop future movement
             gsm.set_game_state("lose")
-            # room = player.get_current_room()
-            # if room:
-            #     room.remove_from_grid(player, player.get_current_position())  # Player stops moving
-            #     #TODO Player should be given an option here to restart or leave the game, and then the correct action would be taken
             return messages
            
         # if gsm.collected_animals >= gsm.total_animals and (player._current_position == Coord(14,7) or player._current_position == Coord(14,8)):
