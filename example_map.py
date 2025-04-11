@@ -36,7 +36,7 @@ class LockableDoor(Door, Observer):
         self._locked = False
         self.set_passability = True  
         
-    def on_notify(self, subject, event):
+    def on_notify(self, event):
         if event in ["WIN", "LOSE"]:
             self.unlock()
 
@@ -80,6 +80,8 @@ class Rock(PressurePlate):
 # ------------------------------------ GAME INSTRUCTIONS ---------------------------------------------------------------   
 class EntranceMenuPressurePlate(PressurePlate):
     def player_entered(self, player) -> list[Message]:
+        if not hasattr(player, "set_current_menu"):
+            return [] 
         room = player.get_current_room()
         if hasattr(room, "entrance_door"):
             room.entrance_door.lock()
@@ -281,10 +283,10 @@ class ExampleHouse(Map):
             self._active_objects.append((new_obj, coord))
 
         # Step 3: Update the existing Hunter’s movement strategy
-        for obj in getattr(self, '_Map__objects', set()):
-            if isinstance(obj, Hunter):
-                obj.movement_strategy = RandomMovement()
-                print("Hunter strategy reset to", type(obj.movement_strategy).__name__)
+        # for obj in getattr(self, '_Map__objects', set()):
+        #     if isinstance(obj, Hunter):
+        #         obj.movement_strategy = RandomMovement()
+        #         print("Hunter strategy reset to", type(obj.movement_strategy).__name__)
 
         # --- Add the Entrance Door ---
         door = LockableDoor(

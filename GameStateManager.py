@@ -47,7 +47,7 @@ class GameStateManager(Subject):
     
     def notify_observers(self, event):
         for observer in self._observers:
-            observer.on_notify(self, event)  
+            observer.on_notify(event)  
 
     def collect_item(self, item):
         """Update game state when the player collects an item."""
@@ -62,9 +62,6 @@ class GameStateManager(Subject):
         self.collected_animals += 1
         self.collected_items.append("animal")  
         self.notify_observers("ANIMAL_COLLECTED")
-        
-        # if self.collected_animals >= self.total_animals:
-        #     self.notify_observers("WIN")
 
     def undo_collect_item(self, item):
         item_type = None
