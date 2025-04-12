@@ -7,6 +7,7 @@ from project.example_map import LockableDoor
 from project.Hunter import Hunter
 from project.imports import * 
 from project.Subject import Subject
+from project.MovementStrategy import RandomMovement, TeleportMovement, ShortestPathMovement
 
 class DummyObserver:
     def __init__(self):
@@ -14,7 +15,6 @@ class DummyObserver:
 
     def on_notify(self, event):
         self.notifications.append(event)
-
 
 class TestObserverPattern:
     def setup_method(self):
@@ -82,15 +82,15 @@ class TestObserverPattern:
         # Case 1: Player picks up a rock first = TeleportMovement
         self.gsm.collected_items = ["rock"]
         self.gsm.notify_observers("ITEM_COLLECTED")
-        assert "Teleport" in type(hunter.movement_strategy).__name__
+        assert isinstance(hunter.movement_strategy, TeleportMovement)
 
         # Case 2: Player picks up a flower after the rock = RandomMovement
         self.gsm.collected_items = ["rock", "flower"]
         self.gsm.notify_observers("ITEM_COLLECTED")
-        assert "Random" in type(hunter.movement_strategy).__name__
+        assert isinstance(hunter.movement_strategy, RandomMovement)
 
         # Case 3: Player collects animal = ShortestPathMovement
         self.gsm.collected_items = ["rock", "flower", "animal"]
         self.gsm.notify_observers("ANIMAL_COLLECTED")
-        assert "ShortestPath" in type(hunter.movement_strategy).__name__
+        assert isinstance(hunter.movement_strategy, ShortestPathMovement)
 
