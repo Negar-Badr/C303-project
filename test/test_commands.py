@@ -19,7 +19,7 @@ class TestCommands:
         Setup method to initialize the room and player for each test.
         """
         self.room = ExampleHouse()
-        self.player = HumanPlayer("Emily")
+        self.player = HumanPlayer("test player")
         self.start = Coord(5, 5)
         self.jump_target = Coord(3, 5)
 
