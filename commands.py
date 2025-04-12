@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from .imports import *
 from .GameStateManager import GameStateManager
+from .utils import StaticSender
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from coord import Coord
@@ -78,11 +79,11 @@ class UndoCommand(Command):
                 msg = f"Dropped {type(item).__name__} at your current location."
 
             return [
-                ChatMessage(player, room, msg),
+                ChatMessage(StaticSender("UPDATE"), room, msg),
                 GridMessage(player, send_desc=False)
             ]
 
-        return [ChatMessage(player, player.get_current_room(), "Nothing to undo.")]
+        return [ChatMessage(StaticSender("UPDATE"), player.get_current_room(), "Nothing to undo.")]
     
     
 class ShowIntroCommand(Command):
@@ -138,7 +139,7 @@ class ResetCommand(Command):
         gsm = GameStateManager()
         if gsm.get_state() not in ["win", "lose"]:
             return [
-                ChatMessage(player, player.get_current_room(), "You can only reset after winning or losing the game."),
+                ChatMessage(StaticSender("SYSTEM"), player.get_current_room(), "You can only reset after winning or losing the game."),
             ]
 
         # Reset game variables
@@ -157,7 +158,7 @@ class ResetCommand(Command):
 
             return [
                 GridMessage(player),
-                ChatMessage(player, current_map, "Game has been reset with fresh map state!")
+                ChatMessage(StaticSender("SYSTEM"), current_map, "Game has been reset with fresh map state!")
             ]
 
-        return [ChatMessage(player, current_map, "Could not reset this map!")]
+        return [ChatMessage(StaticSender("SYSTEM"), current_map, "Could not reset this map!")]
