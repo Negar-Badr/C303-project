@@ -9,19 +9,60 @@ from heapq import *
 
 class MovementStrategy(ABC):
     """Defines how the Hunter should move"""
+    """
+    Abstract base class defining the movement strategy for the Hunter.
+    
+    Design By Contract:
+        Preconditions:
+            - The 'hunter' argument passed to move() must not be None.
+            - The 'direction' parameter (if used) should be a valid string if provided.
+        Postconditions:
+            - The move() method returns a list of Message objects describing the outcome.
+    """
+
     @abstractmethod
-    def move(self, hunter, direction):
+    def move(self, hunter, direction: str, player = None) -> list["Message"]:
         pass
     
     
 class RandomMovement(MovementStrategy):
+    """
+    A movement strategy that chooses a random direction for the hunter's move.
+    
+    Preconditions:
+        - 'hunter' must implement a method base_move(direction: str) -> List[Message].
+    Postconditions:
+        - Returns the result of hunter.base_move() executed with a random valid direction.
+    """
     def move(self, hunter, direction = None, player = None) -> list["Message"]:
+        assert hunter is not None, "Precondition failed: 'hunter' cannot be None."
+        assert hasattr(hunter, "base_move"), "Precondition failed: 'hunter' must have method 'base_move'."
+        
         random_direction = random.choice(['up', 'down', 'left', 'right'])
         return hunter.base_move(random_direction)
 
 
 class ShortestPathMovement(MovementStrategy):
+    """
+    A movement strategy that uses a shortest-path algorithm (Dijkstra) for the hunter.
+    
+    Preconditions:
+        - 'hunter' must provide get_current_position() returning a Coord object.
+        - 'player' must be provided and implement get_current_position().
+        - 'hunter' and 'player' must both have get_current_room() returning a room object 
+          that supports get_map_objects_at(coordinate).
+    Postconditions:
+        - Moves the hunter one step in the direction that is part of the shortest path toward the player.
+        - Returns the result of hunter.base_move() using that computed direction.
+    """
     def move(self, hunter, direction: str, player = None) -> list:
+        assert hunter is not None, "Precondition failed: 'hunter' cannot be None."
+        assert player is not None, "Precondition failed: 'player' cannot be None."
+        assert hasattr(hunter, "get_current_position"), "Precondition failed: 'hunter' must have 'get_current_position()'."
+        assert hasattr(player, "get_current_position"), "Precondition failed: 'player' must have 'get_current_position()'."
+        assert hasattr(hunter, "get_current_room"), "Precondition failed: 'hunter' must have 'get_current_room()'."
+        assert hasattr(player, "get_current_room"), "Precondition failed: 'player' must have 'get_current_room()'."
+
         # Direction mappings
         direc_map = {
             'up': (-1, 0),
@@ -36,7 +77,12 @@ class ShortestPathMovement(MovementStrategy):
             (0, 1): 'right'}
 
         def distance(pos1, pos2):
-            """Calculate Manhattan distance between two positions."""
+            """
+            Calculate Manhattan distance between two positions.
+            Preconditions: pos1 and pos2 are tuples of two integers.
+            """
+            assert isinstance(pos1, tuple) and len(pos1) == 2, "Precondition failed: pos1 must be a tuple of two integers."
+            assert isinstance(pos2, tuple) and len(pos2) == 2, "Precondition failed: pos2 must be a tuple of two integers."
             return abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos2[1]) 
 
         # Use the given direction (computed via hunter.get_direction_toward)
@@ -50,7 +96,12 @@ class ShortestPathMovement(MovementStrategy):
         visited = set()
         
         def is_tree_at_Coord(coord):
-            """Check if a Tree object exists at the given coordinate."""
+            """
+            Check if a Tree object exists at the given coordinate.
+            Preconditions:
+                - 'room' must implement get_map_objects_at(coordinate).
+            """
+            assert hasattr(room, "get_map_objects_at"), "Precondition failed: 'room' must have 'get_map_objects_at()'."
             obj_list = room.get_map_objects_at(coord)
             for obj in obj_list:
                 if str(type(obj)) == "<class 'C303-project.example_map.Tree'>":
@@ -89,11 +140,28 @@ class ShortestPathMovement(MovementStrategy):
     
     
 class TeleportMovement(MovementStrategy):
+    """
+    A movement strategy that teleports the hunter closer to the player if a cooldown period has elapsed.
+    
+    Preconditions:
+        - 'hunter' must implement get_current_room(), get_current_position(), update_position(), and base_move().
+        - 'player' must implement get_current_position().
+        - Teleportation can only occur if at least 2 seconds have passed since the last teleport.
+    Postconditions:
+        - If teleportation conditions are met, the hunter is moved to a new target position.
+          The room grid is updated, and GridMessage is returned.
+        - Otherwise, returns the result of hunter.base_move(direction).
+    """
     def __init__(self):
         self.last_teleport_time = time.time()
 
     def move(self, hunter, direction, player=None) -> list:
-
+        assert hunter is not None, "Precondition failed: 'hunter' cannot be None."
+        assert player is not None, "Precondition failed: 'player' cannot be None."
+        assert hasattr(hunter, "get_current_room"), "Precondition failed: 'hunter' must have 'get_current_room()'."
+        assert hasattr(hunter, "get_current_position"), "Precondition failed: 'hunter' must have 'get_current_position()'."
+        assert hasattr(player, "get_current_position"), "Precondition failed: 'player' must have 'get_current_position()'."
+        
         room = hunter.get_current_room()
         now = time.time()
 
