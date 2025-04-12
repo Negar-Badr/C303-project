@@ -20,7 +20,7 @@ class GameStateManager(Subject):
     Also the subject in the observer pattern.
 
     Invariants:
-        - self.state must be one of ["playing", "win", "lose"].
+        - self.state must be one of GameState enums.
         - self.collected_animals >= 0.
         - len(self.collected_items) >= 0.
         - 0 <= self.collected_animals <= self.total_animals.
@@ -37,7 +37,7 @@ class GameStateManager(Subject):
     def __init__(self):
         """Initialize game state variables only once."""
         if not self._initialized:
-            self.state: GameState = GameState.PLAYING   # Possible states: "playing", "win", "lose"
+            self.state: GameState = GameState.PLAYING # Initial state is PLAYING
             self.collected_items: List[Any] = []  # Stores collected items (e.g., "rock", "flower", "animal")
             self.collected_animals: int = 0     
             self.total_animals: int = 12        
@@ -66,7 +66,7 @@ class GameStateManager(Subject):
         """
         Reset the game to a fresh state.
         Postcondition:
-            - self.state == 'playing'
+            - self.state == GameState.PLAYING
             - self.collected_items is empty
             - self.collected_animals == 0
             - self.tracked_picked_items is empty
@@ -190,9 +190,11 @@ class GameStateManager(Subject):
 
         Postcondition:
             - self.state is updated accordingly
-            - If state == "lose", notify observers with "LOSE"
-            - If state == "win", notify observers with "WIN"
+            - If state == GameState.LOSE, notify observers with "LOSE"
+            - If state == GameState.WIN, notify observers with "WIN"
         """
+        assert isinstance(new_state, GameState), "new_state must be an instance of GameState enum."
+        assert new_state in (GameState.PLAYING, GameState.WIN, GameState.LOSE), "new_state must be a valid GameState."
         if isinstance(new_state, GameState):
             self.state = new_state
         else:
@@ -202,15 +204,6 @@ class GameStateManager(Subject):
             self.notify_observers("LOSE")
         elif new_state == GameState.WIN:
             self.notify_observers("WIN")
-
-        # valid_states = ["playing", "win", "lose"]
-        # assert state in valid_states, f"Invalid state: {state}. Must be in {valid_states}."
-        # if state in ["playing", "win", "lose"]:
-        #     self.state = state
-        # if state == "lose":
-        #     self.notify_observers("LOSE")
-        # if state == "win":
-        #     self.notify_observers("WIN")
 
     def get_state(self) -> GameState:
         """Retrieve the current game state."""

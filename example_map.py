@@ -89,11 +89,6 @@ class EntranceMenuPressurePlate(PressurePlate):
         command = ShowIntroCommand(self)
         return command.execute(player)
     
-    # def select_option(self, player, option):
-    #      # Do nothing, or close the menu
-    #      return []
-        
-
 # -------------------------------------- OUR HOUSE -----------------------------------------------------------------
 class ExampleHouse(Map):
     MAIN_ENTRANCE = True
