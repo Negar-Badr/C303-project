@@ -3,7 +3,7 @@ from .imports import *
 import math
 import random
 from typing import Literal
-from .GameStateManager import GameStateManager
+from .GameStateManager import GameStateManager, GameState
 from .MovementStrategy import *
 # from PIL import Image, ImageTk
 # import tkinter as tk
@@ -128,12 +128,12 @@ class Hunter(NPC, Observer):
                 text_color=(255, 255, 255)  # white text
             ))
 
-            gsm.set_game_state("lose")
+            gsm.set_game_state(GameState.LOSE) #  Lose condition triggered!
             return messages
            
         # if gsm.collected_animals >= gsm.total_animals and (player._current_position == Coord(14,7) or player._current_position == Coord(14,8)):
         if gsm.collected_animals >= gsm.total_animals: 
-            gsm.set_game_state("win") #  Win condition triggered!
+            gsm.set_game_state(GameState.WIN) #  Win condition triggered!
 
             messages.append(
                 SoundMessage(

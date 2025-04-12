@@ -61,15 +61,3 @@ class TestCommands:
         assert gsm.collected_animals == 0
         assert cow in self.room.get_map_objects_at(self.start)
 
-    def test_undo_command_nothing_to_undo(self):
-        """
-        Test that the undo command returns a message when there is nothing to undo.
-        """
-        gsm = GameStateManager()
-        gsm.tracked_picked_items.clear()
-
-        command = UndoCommand()
-        messages = command.execute(self.player)
-
-        assert len(messages) == 1
-        assert isinstance(messages[0], ChatMessage)

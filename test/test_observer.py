@@ -2,7 +2,7 @@
 # hunter, lockable door - observers
 import pytest
 from project.Observer import Observer
-from project.GameStateManager import GameStateManager
+from project.GameStateManager import GameStateManager, GameState
 from project.example_map import LockableDoor
 from project.Hunter import Hunter
 from project.imports import * 
@@ -49,27 +49,27 @@ class TestObserverPattern:
 
     def test_lockable_door_unlocks_on_win(self): 
         """
-        Test that a lockable door unlocks when the game state changes to "win".
+        Test that a lockable door unlocks when the game state changes to GameState.WIN.
         """
         door = LockableDoor("int_entrance")
         door.lock()  # Manually lock the door
         assert door._locked is True
 
         self.gsm.add_observer(door)
-        self.gsm.set_game_state("win")
+        self.gsm.set_game_state(GameState.WIN)
 
         assert door._locked is False, "Door should unlock on WIN state"
 
     def test_lockable_door_locks_on_lose(self):
         """
-        Test that a lockable door locks when the game state changes to "lose".
+        Test that a lockable door locks when the game state changes to GameState.LOSE.
         """
         door = LockableDoor("int_entrance")
         door.unlock()
         assert door._locked is False        
 
         self.gsm.add_observer(door)
-        self.gsm.set_game_state("lose")
+        self.gsm.set_game_state(GameState.LOSE)
         assert door._locked is False, "Door should lock on LOSE state"
 
     def test_hunter_strategy_switches_on_flower_vs_rock(self):

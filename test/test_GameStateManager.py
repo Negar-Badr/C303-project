@@ -1,5 +1,5 @@
 import pytest
-from project.GameStateManager import GameStateManager 
+from project.GameStateManager import GameStateManager, GameState
 
 class TestGameStateManagerSingleton:
 
@@ -21,8 +21,8 @@ class TestGameStateManagerSingleton:
         """
         manager1 = GameStateManager()
         manager2 = GameStateManager()
-        manager1.state = "playing"
-        assert manager2.state == "playing", "GameManager instances should share state"
+        manager1.state = GameState.PLAYING
+        assert manager2.state == GameState.PLAYING, "GameManager instances should share state"
 
     def test_singleton_id_is_same(self):
         """
@@ -46,7 +46,7 @@ class TestGameStateManagerSingleton:
 
         assert manager1.collected_items == [], "Reset should clear collected items"
         assert manager1.collected_animals == 0, "Reset should reset animal count"
-        assert manager1.state == "playing", "Reset should set state to 'playing'"
+        assert manager1.state == GameState.PLAYING, "Reset should set state to PLAYING"
 
     def test_original_objects_storage(self):
         """
