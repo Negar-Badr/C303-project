@@ -3,9 +3,9 @@ from .imports import *
 import math
 import random
 from typing import Literal
-from .GameStateManager import GameStateManager
+from .GameStateManager import GameStateManager, GameState
 from .Animal import Cow, Monkey, Owl, Rabbit
-from .Flower import Daisy, Orchid, Daffodil, Tulip
+from .Flower import *
 from .MovementStrategy import RandomMovement
 from collections.abc import Callable
 from .commands import *
@@ -37,7 +37,7 @@ class LockableDoor(Door, Observer):
         self.set_passability = True  
         
     def on_notify(self, event):
-        if event in ["WIN", "LOSE"]:
+        if event in ["WIM", "LOSE"]:
             self.unlock()
 
     def player_entered(self, player) -> list[Message]:
@@ -88,10 +88,7 @@ class EntranceMenuPressurePlate(PressurePlate):
         room.remove_from_grid(self, self.get_position())
         command = ShowIntroCommand(self)
         return command.execute(player)
-    def select_option(self, player, option):
-        # Do nothing, or close the menu
-        return []
-
+    
 # -------------------------------------- OUR HOUSE -----------------------------------------------------------------
 class ExampleHouse(Map):
     MAIN_ENTRANCE = True
@@ -266,7 +263,7 @@ class ExampleHouse(Map):
     def reset_objects(self):
         gsm = GameStateManager()
 
-        # Step 1: Remove objects that aren't Player or Hunter
+        # Step 1: Remove objects that aren't Player or Hunter or LockableDoor
         for obj in list(getattr(self, '_Map__objects', set())):
             if not isinstance(obj, (Player, Hunter, LockableDoor)):
                 self.remove_from_grid(obj, obj.get_position())
@@ -281,22 +278,4 @@ class ExampleHouse(Map):
             new_obj._current_room = self
             self.add_to_grid(new_obj, coord)
             self._active_objects.append((new_obj, coord))
-
-        # Step 3: Update the existing Hunter’s movement strategy
-        # for obj in getattr(self, '_Map__objects', set()):
-        #     if isinstance(obj, Hunter):
-        #         obj.movement_strategy = RandomMovement()
-        #         print("Hunter strategy reset to", type(obj.movement_strategy).__name__)
-
-        # --- Add the Entrance Door ---
-        # door = LockableDoor(
-        #     'int_entrance',
-        #     linked_room="Trottier Town",
-        #     is_main_entrance=True
-        # )
-        # door.unlock()  # ensure the door starts unlocked
-        # self.entrance_door = door  # store reference for later locking/unlocking
-        # self.add_to_grid(door, Coord(14, 7))
-        # #door.connect_to(trot, Coord(14, 7))
-        # gsm.add_observer(door)  # Add the door as an observer
 
