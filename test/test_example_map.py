@@ -12,18 +12,27 @@ class TestExampleHouse:
 
     @pytest.fixture
     def house(self) -> tuple[ExampleHouse, HumanPlayer]:
+        """
+        Setup method to initialize the room and player for each test.
+        """
         room = ExampleHouse()
         player = HumanPlayer("test player")
         player.change_room(room)
         return room, player
 
     def test_player_starts_in_house(self, house):
+        """
+        Test that the player starts in the house.
+        """
         room, player = house
         pos = player.get_current_position()
         # Check that the player is indeed on the map at their position
         assert player in room.get_map_objects_at(pos)
 
     def test_player_can_move(self, house):
+        """
+        Test that the player can move to a new position.
+        """
         room, player = house
         start = player.get_current_position()
         player.move("right")

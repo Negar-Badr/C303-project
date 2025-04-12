@@ -1,4 +1,4 @@
-# COMP 303 Project
+# COMP 303 Project - GROUP 41
 
 ## Running Tests
 1. Rename the directory:  
@@ -9,3 +9,8 @@
 
 3. Use this to run tests:  
    PYTHONPATH="." pytest test -W ignore::DeprecationWarning
+
+## Class Diagram
+![Class Diagram](resources/image/class_diagram/class_diagram_group41.png)
+
+
