@@ -11,6 +11,4 @@
    PYTHONPATH="." pytest test -W ignore::DeprecationWarning
 
 ## Class Diagram
-![Class Diagram](resources/image/class_diagram/class_diagram_group41.png)
-
-
+![class_diagram_group41](https://github.com/user-attachments/assets/becec196-9fb2-4cf3-b64a-f5cc3f23730f)
