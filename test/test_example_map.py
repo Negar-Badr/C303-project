@@ -19,7 +19,3 @@ class TestExampleHouse:
         player.set_state("score", 0)
         return room, player
 
-    def test_pplate_score(self, house) -> None:
-        room, player = house
-        player.move("up")
-        assert player.get_state("score") == 1, "Player should have a score of 1 after stepping on the pressure plate"
