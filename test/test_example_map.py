@@ -1,7 +1,7 @@
 import pytest
 
-from ..imports import *
-from ..example_map import ExampleHouse
+from project.example_map import ExampleHouse, Tree
+from project.imports import *
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -12,10 +12,22 @@ class TestExampleHouse:
 
     @pytest.fixture
     def house(self) -> tuple[ExampleHouse, HumanPlayer]:
-        # create a new house and player
         room = ExampleHouse()
         player = HumanPlayer("test player")
         player.change_room(room)
-        player.set_state("score", 0)
         return room, player
 
+    def test_player_starts_in_house(self, house):
+        room, player = house
+        pos = player.get_current_position()
+        # Check that the player is indeed on the map at their position
+        assert player in room.get_map_objects_at(pos)
+
+    def test_player_can_move(self, house):
+        room, player = house
+        start = player.get_current_position()
+        player.move("right")
+        end = player.get_current_position()
+
+        assert start != end, "Player did not move"
+        assert player in room.get_map_objects_at(end), "Player not found at new position"
