@@ -3,6 +3,9 @@ from .imports import *
 from .GameStateManager import GameStateManager
 from .utils import StaticSender
 from typing import TYPE_CHECKING
+from .GameStateManager import GameState
+
+
 if TYPE_CHECKING:
     from coord import Coord
 
@@ -232,7 +235,7 @@ class ResetCommand(Command):
 
         gsm = GameStateManager()
         assert gsm is not None, "Precondition failed: 'GameStateManager' cannot be None."
-        if gsm.get_state() not in ["win", "lose"]:
+        if gsm.get_state() not in [GameState.WIN, GameState.LOSE]:
             return [
                 ChatMessage(StaticSender("SYSTEM"), player.get_current_room(), "You can only reset after winning or losing the game."),
             ]

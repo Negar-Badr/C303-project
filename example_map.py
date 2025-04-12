@@ -3,7 +3,7 @@ from .imports import *
 import math
 import random
 from typing import Literal
-from .GameStateManager import GameStateManager
+from .GameStateManager import GameStateManager, GameState
 from .Animal import Cow, Monkey, Owl, Rabbit
 from .Flower import *
 from .MovementStrategy import RandomMovement
@@ -37,7 +37,7 @@ class LockableDoor(Door, Observer):
         self.set_passability = True  
         
     def on_notify(self, event):
-        if event in ["WIN", "LOSE"]:
+        if event in ["WIM", "LOSE"]:
             self.unlock()
 
     def player_entered(self, player) -> list[Message]:
@@ -88,6 +88,11 @@ class EntranceMenuPressurePlate(PressurePlate):
         room.remove_from_grid(self, self.get_position())
         command = ShowIntroCommand(self)
         return command.execute(player)
+    
+    # def select_option(self, player, option):
+    #      # Do nothing, or close the menu
+    #      return []
+        
 
 # -------------------------------------- OUR HOUSE -----------------------------------------------------------------
 class ExampleHouse(Map):

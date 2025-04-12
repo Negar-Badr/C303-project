@@ -1,3 +1,4 @@
+from enum import Enum
 from .imports import *
 from .Subject import Subject
 from .Observer import Observer
@@ -6,6 +7,11 @@ from typing import List, Tuple, Optional, Any, TYPE_CHECKING
 if TYPE_CHECKING:
     from coord import Coord
     from maps.base import Map
+    
+class GameState(Enum):
+    PLAYING = "playing"
+    WIN = "win"
+    LOSE = "lose"
 
 class GameStateManager(Subject):
     """
@@ -31,7 +37,7 @@ class GameStateManager(Subject):
     def __init__(self):
         """Initialize game state variables only once."""
         if not self._initialized:
-            self.state: str = "playing"  # Possible states: "playing", "win", "lose"
+            self.state: GameState = GameState.PLAYING   # Possible states: "playing", "win", "lose"
             self.collected_items: List[Any] = []  # Stores collected items (e.g., "rock", "flower", "animal")
             self.collected_animals: int = 0     
             self.total_animals: int = 12        
@@ -65,7 +71,7 @@ class GameStateManager(Subject):
             - self.collected_animals == 0
             - self.tracked_picked_items is empty
         """
-        self.state = "playing"
+        self.state = GameState.PLAYING
         self.collected_items.clear()
         self.collected_animals = 0
         self.tracked_picked_items.clear()
@@ -175,26 +181,38 @@ class GameStateManager(Subject):
 
         self.notify_observers("ITEM_COLLECTED")
 
-    def set_game_state(self, state: str) -> None:
+    def set_game_state(self, new_state: GameState) -> None:
         """
         Change the game state if it is valid.
-        Precondition:
-            - state is one of ["playing", "win", "lose"]
+        
+        Preconditions:
+            - new_state must be one of GameState.PLAYING, GameState.WIN, or GameState.LOSE.
+
         Postcondition:
             - self.state is updated accordingly
             - If state == "lose", notify observers with "LOSE"
             - If state == "win", notify observers with "WIN"
         """
-        valid_states = ["playing", "win", "lose"]
-        assert state in valid_states, f"Invalid state: {state}. Must be in {valid_states}."
-        if state in ["playing", "win", "lose"]:
-            self.state = state
-        if state == "lose":
+        if isinstance(new_state, GameState):
+            self.state = new_state
+        else:
+            raise ValueError("new_state must be an instance of GameState enum.")
+        
+        if new_state == GameState.LOSE:
             self.notify_observers("LOSE")
-        if state == "win":
+        elif new_state == GameState.WIN:
             self.notify_observers("WIN")
 
-    def get_state(self) -> str:
+        # valid_states = ["playing", "win", "lose"]
+        # assert state in valid_states, f"Invalid state: {state}. Must be in {valid_states}."
+        # if state in ["playing", "win", "lose"]:
+        #     self.state = state
+        # if state == "lose":
+        #     self.notify_observers("LOSE")
+        # if state == "win":
+        #     self.notify_observers("WIN")
+
+    def get_state(self) -> GameState:
         """Retrieve the current game state."""
         return self.state
 
@@ -204,8 +222,8 @@ class GameStateManager(Subject):
     
     def is_game_over(self) -> bool:
         """Returns True if the game is over."""
-        return self.state == "lose"
+        return self.state == GameState.LOSE
     
     def is_win(self) -> bool:
         """Returns True if the game is won."""
-        return self.state == "win"
+        return self.state == GameState.WIN
