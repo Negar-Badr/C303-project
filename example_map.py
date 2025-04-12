@@ -37,7 +37,7 @@ class LockableDoor(Door, Observer):
         self.set_passability = True  
         
     def on_notify(self, event):
-        if event in ["WIM", "LOSE"]:
+        if event in ["WIN", "LOSE"]:
             self.unlock()
 
     def player_entered(self, player) -> list[Message]:
