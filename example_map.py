@@ -5,7 +5,7 @@ import random
 from typing import Literal
 from .GameStateManager import GameStateManager
 from .Animal import Cow, Monkey, Owl, Rabbit
-from .Flower import Daisy, Orchid, Daffodil, Tulip
+from .Flower import *
 from .MovementStrategy import RandomMovement
 from collections.abc import Callable
 from .commands import *
