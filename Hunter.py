@@ -57,7 +57,7 @@ class Hunter(NPC, Observer):
         elif event == "LOSE":
             self.movement_strategy = RandomMovement()
 
-    def _find_player(self) -> Optional[Any]:
+    def _find_player(self) -> Optional[Player]:
         """
         Retrieve the player instance from the current room.
 
@@ -190,7 +190,7 @@ class Hunter(NPC, Observer):
         
         return messages
 
-    def base_move(self, direction: str) -> Any:
+    def base_move(self, direction: str) -> list[Message]:
         """
         Perform a basic move in the given direction using the inherited move function.
 
