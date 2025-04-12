@@ -234,7 +234,7 @@ class ExampleHouse(Map):
         objects = self.generate_items()
 
         # --- Add the NPC Hunter ---
-        hunter = Hunter( #todo
+        hunter = Hunter( 
             encounter_text="I caught you!",
             staring_distance=1,
         )
@@ -268,7 +268,7 @@ class ExampleHouse(Map):
 
         # Step 1: Remove objects that aren't Player or Hunter
         for obj in list(getattr(self, '_Map__objects', set())):
-            if not isinstance(obj, (Player, Hunter)):
+            if not isinstance(obj, (Player, Hunter, LockableDoor)):
                 self.remove_from_grid(obj, obj.get_position())
 
         # Step 2: Generate new items using generate_items()
@@ -289,13 +289,14 @@ class ExampleHouse(Map):
         #         print("Hunter strategy reset to", type(obj.movement_strategy).__name__)
 
         # --- Add the Entrance Door ---
-        door = LockableDoor(
-            'int_entrance',
-            linked_room="Trottier Town",
-            is_main_entrance=True
-        )
-        door.unlock()  # ensure the door starts unlocked
-        self.entrance_door = door  # store reference for later locking/unlocking
-        self.add_to_grid(door, Coord(14, 7))
-        gsm.add_observer(door)  # Add the door as an observer
+        # door = LockableDoor(
+        #     'int_entrance',
+        #     linked_room="Trottier Town",
+        #     is_main_entrance=True
+        # )
+        # door.unlock()  # ensure the door starts unlocked
+        # self.entrance_door = door  # store reference for later locking/unlocking
+        # self.add_to_grid(door, Coord(14, 7))
+        # #door.connect_to(trot, Coord(14, 7))
+        # gsm.add_observer(door)  # Add the door as an observer
 
