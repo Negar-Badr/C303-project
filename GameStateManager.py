@@ -57,7 +57,7 @@ class GameStateManager(Subject):
     def track_picked_item(self, item, coord):
         self.tracked_picked_items.append((coord, item))
 
-    def collect_animal(self, animal_name):
+    def collect_animal(self):
         """Update game state when the player collects an animal."""
         self.collected_animals += 1
         self.collected_items.append("animal")  
