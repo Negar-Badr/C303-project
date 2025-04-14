@@ -165,11 +165,14 @@ class EntranceMenuPressurePlate(PressurePlate):
 # -------------------------------------- OUR HOUSE -----------------------------------------------------------------
 class ExampleHouse(Map):
     """
-    A concrete map representing an example house with game instructions, items, and NPCs.
-    
-    Invariants:
-      - The map has a defined size (15x15).
-      - The entrance is located at Coord(14, 7).
+    A 15x15 grid-based map featuring a main entrance, dynamic object generation, and player interactions. 
+    Includes trees, rocks, flowers, animals, and an NPC hunter, with mechanics for movement, item collection, 
+    and game state updates.
+
+    Key Features:
+      - Main entrance at Coord(14, 7) with a lockable door.
+      - Dynamic item generation and reset functionality.
+      - Player movement and interaction with map objects.
     """
     MAIN_ENTRANCE: bool = True
 
