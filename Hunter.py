@@ -126,7 +126,7 @@ class Hunter(NPC, Observer):
             messages.append(DialogueMessage(
                 self,
                 player,
-                "GAME OVER! The hunter caught you.",
+                "GAME OVER! The hunter caught you MOUAHAHA.",
                 self.get_image_name(),
                 auto_delay=1000,
                 bg_color=(0, 0, 0),
@@ -135,7 +135,7 @@ class Hunter(NPC, Observer):
             messages.append(DialogueMessage(
                 self,
                 player,
-                "Please leave the room.\nTo restart the game, come back and press 'r'",
+                "To restart the game...\nLeave the room, come back, and press 'r'",
                 self.get_image_name(),
                 auto_delay=1000,
                 bg_color=(0, 0, 0),

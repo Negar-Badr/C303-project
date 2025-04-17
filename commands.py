@@ -179,15 +179,16 @@ class ShowIntroCommand(Command):
         messages: list['Message'] = []
 
         intro_text = (
-            "Rescue all animals!\n"
-            "Avoid rocks!\n"
+            "Help save all animals\n"
+            "Beware of rocks!\n"
             "Collect flowers to stay safe:)"
         )
 
         tips_text = (
-            "- Press 'j' to jump\n"
-            "- Press 'z' to undo\n"
-            "- Press 'r' to reset the map"
+            "Press:\n"
+            "'j' to jump\n"
+            "'z' to undo\n"
+            "'r' to reset the map after the game"
         )
         messages.append(
             DialogueMessage(
