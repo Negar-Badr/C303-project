@@ -20,8 +20,9 @@
 
 ## Game Demo
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/37faef38-b989-430d-b767-00c11d10dca9" alt="demo" />
+  <img src="https://github.com/user-attachments/assets/37faef38-b989-430d-b767-00c11d10dca9" alt="demo" style="width:60%;"/>
 </div>
+
 
 ## How to Play
 
