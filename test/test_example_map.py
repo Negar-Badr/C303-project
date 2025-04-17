@@ -1,5 +1,6 @@
+# TO RUN THE TEST (please follow the README): 
+# PYTHONPATH="." pytest test -W ignore::DeprecationWarning 
 import pytest
-
 from project.example_map import ExampleHouse, Tree
 from project.imports import *
 
@@ -40,3 +41,4 @@ class TestExampleHouse:
 
         assert start != end, "Player did not move"
         assert player in room.get_map_objects_at(end), "Player not found at new position"
+

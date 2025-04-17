@@ -1,3 +1,5 @@
+# TO RUN THE TEST (please follow the README): 
+# PYTHONPATH="." pytest test -W ignore::DeprecationWarning 
 import pytest
 from project.GameStateManager import GameStateManager, GameState
 
@@ -32,7 +34,7 @@ class TestGameStateManagerSingleton:
         manager2 = GameStateManager()
         assert id(manager1) == id(manager2), "Singleton instances should have the same memory address"
 
-    def test_reset_affects_all_references(self):
+    def test_reset_game_state(self):
         """
         Test that resetting the game state affects all references to the singleton.
         """
@@ -48,7 +50,7 @@ class TestGameStateManagerSingleton:
         assert manager1.collected_animals == 0, "Reset should reset animal count"
         assert manager1.state == GameState.PLAYING, "Reset should set state to PLAYING"
 
-    def test_original_objects_storage(self):
+    def test_original_objects(self):
         """
         Test that original objects are stored correctly in the singleton.
         """
@@ -69,6 +71,7 @@ class TestGameStateManagerSingleton:
 
         def on_notify(self, event):
             self.notifications.append(event)
+            
 
     def test_observer_shared_across_instances(self):
         """
@@ -86,7 +89,7 @@ class TestGameStateManagerSingleton:
     class DummyFlower:
         pass
 
-    def test_undo_behavior_reflects_globally(self):
+    def test_undo_collect_item(self):
         """
         Test that undo behavior reflects across all instances of the singleton.
         """
@@ -98,3 +101,6 @@ class TestGameStateManagerSingleton:
         manager2.undo_collect_item(flower)
 
         assert "flower" not in manager1.collected_items, "Undo should reflect across singleton references"
+
+
+    # TODO: implement tests for collect item, track picked item, collect animal, set game state, is game over, is win

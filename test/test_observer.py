@@ -1,5 +1,5 @@
-# game state manager - subject 
-# hunter, lockable door - observers
+# TO RUN THE TEST (please follow the README): 
+# PYTHONPATH="." pytest test -W ignore::DeprecationWarning 
 import pytest
 from project.Observer import Observer
 from project.GameStateManager import GameStateManager, GameState
@@ -17,6 +17,7 @@ class DummyObserver:
         self.notifications.append(event)
 
 class TestObserverPattern:
+    @pytest.fixture(autouse=True)
     def setup_method(self):
         """
         Setup method to initialize the GameStateManager and reset the game state for each test.

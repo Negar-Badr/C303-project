@@ -1,5 +1,6 @@
-# change directory name to project 
-# use PYTHONPATH="." pytest test -W ignore::DeprecationWarning in project directory
+# TO RUN THE TEST (please follow the README)
+# PYTHONPATH="." pytest test -W ignore::DeprecationWarning 
+
 from project.commands import *
 from project.example_map import ExampleHouse
 from project.GameStateManager import GameStateManager
@@ -30,7 +31,7 @@ class TestCommands:
         GameStateManager().reset_game_state()  # clean state for each test
 
 
-    def test_jump_command_executes_jump_successfully(self):
+    def test_jump_command(self):
         """
         Test that the jump command executes successfully and moves the player.
         """
@@ -43,7 +44,7 @@ class TestCommands:
         assert self.player.get_current_position() == self.jump_target
         assert any(isinstance(m, GridMessage) for m in messages)
 
-    def test_undo_command_with_item(self):
+    def test_undo_command(self):
         """
         Test that the undo command correctly removes an item from the player's inventory
         """
@@ -61,3 +62,24 @@ class TestCommands:
         assert gsm.collected_animals == 0
         assert cow in self.room.get_map_objects_at(self.start)
 
+    def test_reset_command(self): 
+        """
+        Test that the ResetCommand properly resets the game state and repositions the player to the starting location.
+        """
+        gsm = GameStateManager()
+        cow = Cow()
+        self.room.add_to_grid(cow, self.start)
+        gsm.tracked_picked_items = [(self.start, cow)]
+        gsm.collected_items.append("animal")
+        gsm.collected_animals = 1
+
+        # Set state to WIN so reset is allowed
+        gsm.set_game_state(GameState.WIN)
+
+        # Execute reset
+        command = ResetCommand()
+        messages = command.execute(self.player)
+
+        assert gsm.collected_animals == 0
+        assert gsm.collected_items == []
+        assert any(isinstance(m, GridMessage) for m in messages)
