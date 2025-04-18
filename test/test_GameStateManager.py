@@ -4,7 +4,6 @@ import pytest
 from project.GameStateManager import GameStateManager, GameState
 
 class TestGameStateManagerSingleton:
-
     def setup_method(self):
         # Reset game state before each test
         GameStateManager().reset_game_state()
@@ -101,6 +100,3 @@ class TestGameStateManagerSingleton:
         manager2.undo_collect_item(flower)
 
         assert "flower" not in manager1.collected_items, "Undo should reflect across singleton references"
-
-
-    # TODO: implement tests for collect item, track picked item, collect animal, set game state, is game over, is win

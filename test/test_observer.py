@@ -1,12 +1,10 @@
 # TO RUN THE TEST (please follow the README): 
 # PYTHONPATH="." pytest test -W ignore::DeprecationWarning 
 import pytest
-from project.Observer import Observer
 from project.GameStateManager import GameStateManager, GameState
 from project.example_map import LockableDoor
 from project.Hunter import Hunter
 from project.imports import * 
-from project.Subject import Subject
 from project.MovementStrategy import RandomMovement, TeleportMovement, ShortestPathMovement
 
 class DummyObserver:
