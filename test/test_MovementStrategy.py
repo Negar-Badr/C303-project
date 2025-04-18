@@ -4,14 +4,11 @@
 import pytest
 from project.Hunter import Hunter
 from project.MovementStrategy import *
-from project.example_map import Tree
-from project.Animal import Cow
 from project.imports import *
 from project.imports import Coord
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from coord import Coord
-    from Player import HumanPlayer
 
 # Stub Coord
 class Coord:
@@ -19,95 +16,128 @@ class Coord:
         self.y = y
         self.x = x
 
+    def to_tuple(self):
+        return (self.y, self.x)
+
 # Stub Room
 class Room:
-    def __init__(self, allow_remove=True):
-        
-        self.allow_remove = allow_remove
-        self.added = False
+    def __init__(self):
         self.removed = False
+        self.added_coord = None
+
+    def get_map_objects_at(self, coord):
+        return []  # No trees
 
     def remove_from_grid(self, hunter, coord):
         self.removed = True
-        if self.allow_remove:
-            return True, None
-        else:
-            return False, "Failed to remove"
+        return True, None
 
     def add_to_grid(self, hunter, coord):
-        self.added = True
+        self.added_coord = coord
+
+    def get_info(self, player):
+        return {} 
 
 # Stub Player
 class Player:
     def __init__(self, y, x):
         self.pos = Coord(y, x)
-
     def get_current_position(self):
         return self.pos
+    def get_current_room(self):
+        return Room()
 
 # Stub Hunter
 class Hunter:
-    def __init__(self, y, x, room):
+    def __init__(self, y, x):
         self.pos = Coord(y, x)
-        self.room = room
         self.move_log = []
-        self.updated = False
+        self.updated = False  
 
     def get_current_position(self):
         return self.pos
 
+    def get_current_room(self):
+        return self.room  
+
     def base_move(self, direction):
         self.move_log.append(direction)
+        if direction == "left":
+            self.pos.x -= 1
+        elif direction == "right":
+            self.pos.x += 1
+        elif direction == "up":
+            self.pos.y -= 1
+        elif direction == "down":
+            self.pos.y += 1
         return [f"moved {direction}"]
-
-    def get_current_room(self):
-        return self.room
 
     def update_position(self, new_pos, room):
         self.pos = new_pos
         self.updated = True
 
-# TODO: Improve the tests 
-def test_random_movement():
-    """
-    Test that the RandomMovement strategy moves the hunter randomly.
-    """
-    class PredictableRandom(RandomMovement):
-        def move(self, hunter, direction=None, player=None):
-            return hunter.base_move("left")
 
-    hunter = Hunter(1, 1, Room())
-    strat = PredictableRandom()
-    msgs = strat.move(hunter)
-    assert msgs == ["moved left"]
-    assert hunter.move_log == ["left"]
+# Define fixtures 
+@pytest.fixture
+def room():
+    return Room()
+
+@pytest.fixture
+def hunter(room):
+    h = Hunter(2, 2)
+    h.room = room                   
+    h.get_current_room = lambda: room 
+    return h
+
+@pytest.fixture
+def player():
+    return Player(2, 5)
+
+@pytest.fixture
+def shortest_path_strategy():
+    return ShortestPathMovement()
+
+@pytest.fixture
+def teleport_strategy():
+    strat = TeleportMovement()
+    strat.last_teleport_time = time.time() - 3  
+    return strat
+
+@pytest.fixture
+def random_strategy():
+    return RandomMovement()
 
 
-def test_shortest_path_movement(): 
-    """
-    Test that the ShortestPathMovement strategy moves the hunter towards the player.
-    """
-    class PredictableShortestPath(ShortestPathMovement):
-        def move(self, hunter, direction=None, player=None):
-            return hunter.base_move("up")
+class TestMovementStrategies:
+    def test_random_movement(self, hunter, random_strategy):
+        """
+        Test that the hunter moves randomly in one of the four directions.
+        """
+        msgs = random_strategy.move(hunter)
+        assert hunter.move_log[-1] in ["left", "right", "up", "down"]
+        assert "moved" in msgs[0]
 
-    hunter = Hunter(1, 1, Room())
-    strat = PredictableShortestPath()
-    msgs = strat.move(hunter)
-    assert msgs == ["moved up"]
-    assert hunter.move_log == ["up"]
+    def test_shortest_path_movement(self, hunter, player, shortest_path_strategy):
+        """
+        Test that the hunter moves towards the player using the shortest path.
+        """
+        original_distance = abs(hunter.pos.y - player.pos.y) + abs(hunter.pos.x - player.pos.x)
 
+        msgs = shortest_path_strategy.move(hunter, direction=None, player=player)
 
-def test_teleport_movement():
-    """
-    Test that the TeleportMovement strategy teleports the hunter to the player's position.
-    """
-    class PredictableTeleport(TeleportMovement):
-        def move(self, hunter, direction=None, player=None):
-            return hunter.base_move("teleport")
+        assert hunter.move_log[-1] in ["left", "right", "up", "down"]
+        new_distance = abs(hunter.pos.y - player.pos.y) + abs(hunter.pos.x - player.pos.x)
+        assert new_distance < original_distance
+        assert msgs == [f"moved {hunter.move_log[-1]}"]
 
-    hunter = Hunter(1, 1, Room())
-    strat = PredictableTeleport()
-    msgs = strat.move(hunter)
-    assert msgs == ["moved teleport"]
-    assert hunter.move_log == ["teleport"]
+    def test_teleport(self, hunter, player, teleport_strategy, room):
+        """
+        Test that the hunter teleports to a position close to the player.
+        """
+        msgs = teleport_strategy.move(hunter, direction="up", player=player)
+
+        # Hunter should teleport close to player
+        assert hunter.updated, "Hunter should have updated position"
+        assert isinstance(msgs[0], GridMessage), "Expected a GridMessage after teleport"
+        assert room.removed, "Hunter should be removed from grid"
+        assert room.added_coord is not None, "Hunter should be added to new coord"
